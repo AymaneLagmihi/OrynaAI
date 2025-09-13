@@ -19,12 +19,6 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
     ],
-    rules: {
-      // Custom rules can be added here
-      "react/react-in-jsx-scope": "off", // Not needed in Next.js
-      "react/jsx-uses-react": "off", // Not needed in Next.js
-      "@next/next/no-img-element": "off", // Allow <img> elements
-    },
   },
 ];
 
