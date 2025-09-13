@@ -1,27 +1,27 @@
-"use client";
+// "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/client";
+// import { useEffect } from "react";
+// import { useRouter } from "next/navigation";
+// import { supabase } from "@/lib/supabase/client";
 
-export default function AuthCallback() {
-  const router = useRouter();
+// export default function AuthCallback() {
+//   const router = useRouter();
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+//   useEffect(() => {
+//     const checkSession = async () => {
+//       const {
+//         data: { session },
+//       } = await supabase.auth.getSession();
 
-      if (session) {
-        router.push("/dashboard");
-      } else {
-        router.push("/login");
-      }
-    };
+//       if (session) {
+//         router.push("/dashboard");
+//       } else {
+//         router.push("/login");
+//       }
+//     };
 
-    checkSession();
-  }, [router]);
+//     checkSession();
+//   }, [router]);
 
-  return <p>Loading...</p>;
-}
+//   return <p>Loading...</p>;
+// }
