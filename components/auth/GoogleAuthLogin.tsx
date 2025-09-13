@@ -18,6 +18,7 @@ export default function GoogleAuthButton() {
     } else {
       console.log("Redirecting to Google...");
     }
+    return { data};
   };
 
   return (
