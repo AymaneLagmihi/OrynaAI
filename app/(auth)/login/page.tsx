@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, Chrome, AlertCircle} from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, AlertCircle} from "lucide-react";
 import { Toaster, toast } from 'sonner'
 import GoogleAuthButton from "@/components/auth/GoogleAuthLogin";
 import Link from "next/link";
@@ -100,7 +100,7 @@ const Login: React.FC = () => {
                     placeholder="Enter your password"
                     className="pl-10 pr-10 h-12 border-2 focus:border-primary transition-colors"
                     value={password}
-                    // onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     required 
                     disabled={isLoading}
                   />
@@ -109,7 +109,7 @@ const Login: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    // onClick={() => setShowPassword(!showPassword)}
+                    onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
                   >
                     {showPassword ? (
@@ -125,9 +125,9 @@ const Login: React.FC = () => {
               <div className="flex justify-end">
                 <Button 
                   type="button"
-                  variant="link" 
+                  variant="link"
                   className="px-0 font-normal text-sm" 
-                //onClick={handleForgot}
+                  // onClick={handleForgot}
                   disabled={isLoading}
                 >
                   Forgot your password?

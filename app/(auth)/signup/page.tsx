@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mail, Lock, User, Chrome } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User} from "lucide-react";
 import { Toaster } from 'sonner'
 import Link from "next/link";
 import GoogleSignup from "@/components/auth/GoogleAuthSignUp";
