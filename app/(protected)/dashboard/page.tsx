@@ -42,6 +42,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
+import { supabase } from "@/lib/supabase/client";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -60,6 +61,11 @@ const Dashboard = () => {
   ];
 
     const [user, setUser] = useState<any>(null);
+
+
+  async function signOut() {
+  const { error } = await supabase.auth.signOut()
+}
 
   return (
     <div className="min-h-screen bg-background">
@@ -127,7 +133,7 @@ const Dashboard = () => {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => {/* Handle logout logic here */}}>
+                <DropdownMenuItem onClick={signOut}>
                   <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

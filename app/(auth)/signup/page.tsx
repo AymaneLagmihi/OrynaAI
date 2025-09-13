@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Lock, User, Chrome } from "lucide-react";
 import { Toaster } from 'sonner'
 import Link from "next/link";
+import GoogleSignup from "@/components/auth/GoogleAuthSignUp";
 
 const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -43,15 +44,9 @@ const Signup: React.FC = () => {
             {/* Success Display */}
 
             {/* Google Sign Up */}
-            <Button 
-                variant="outline" 
-                className="w-full h-12 border-2 hover:bg-accent/50 transition-all duration-300"
-                type="button"
-                disabled={isLoading}
-            >
-              <Chrome className="mr-2 h-4 w-4" />
-              {isLoading ? "Loading..." : "Sign up with Google"}
-            </Button>
+            <GoogleSignup />
+
+            {/* Separator */}
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

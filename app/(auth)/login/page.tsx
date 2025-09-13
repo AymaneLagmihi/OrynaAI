@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, Chrome, AlertCircle, Link } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Chrome, AlertCircle} from "lucide-react";
 import { Toaster, toast } from 'sonner'
+import GoogleAuthButton from "@/components/auth/GoogleAuthLogin";
+import Link from "next/link";
 
 
 const Login: React.FC = () => {
@@ -47,18 +49,11 @@ const Login: React.FC = () => {
               </div>
             )}
 
-            {/* Google Sign In */}
-            <Button 
-              variant="outline" 
-              id="login"
-              className="w-full h-12 border-2 hover:bg-accent/50 transition-all duration-300"
-              type="button"
-            //   onClick={handleGoogle}
-              disabled={isLoading}
-            >
-              <Chrome className="mr-2 h-4 w-4" />
-              {isLoading ? "Loading..." : "Continue with Google"}
-            </Button>
+            {/* Google Sign-In Button */}
+
+            <GoogleAuthButton />
+
+            {/* Separator */}
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -152,8 +147,8 @@ const Login: React.FC = () => {
             {/* Sign Up Link */}
             <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Link to="/signup" className="font-medium text-primary hover:underline">
-                Sign up now
+              <Link href="/signup" className="font-medium text-primary hover:underline">
+                <Button variant='secondary' size='sm'>Sign up now</Button>
               </Link>
             </div>
           </CardContent>
