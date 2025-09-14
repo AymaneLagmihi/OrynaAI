@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Lock, User} from "lucide-react";
 import { Toaster } from 'sonner'
 import Link from "next/link";
-import GoogleSignup from "@/components/auth/GoogleAuthSignUp";
+import GoogleSignup from "@/components/(auth)/GoogleAuthSignUp";
 
 const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, AlertCircle} from "lucide-react";
 import { Toaster, toast } from 'sonner'
-import GoogleLogin from "@/components/auth/GoogleAuthLogin";
+import GoogleLogin from "@/components/(auth)/GoogleAuthLogin";
 import Link from "next/link";
 
 
