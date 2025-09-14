@@ -11,6 +11,10 @@ export default function GoogleSignup() {
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`, // redirects back to your app
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+    },
       },
     });
 
@@ -22,7 +26,7 @@ export default function GoogleSignup() {
   return (
     <>
       {/* Google Sign In */}
-      
+      <script src="https://accounts.google.com/gsi/client" async>
         <Button 
             variant="outline" 
             id="login"
@@ -34,6 +38,7 @@ export default function GoogleSignup() {
             Sign in with Google
 
         </Button>
+      </script>
     </>
   );
 }
