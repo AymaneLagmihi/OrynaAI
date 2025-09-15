@@ -1,39 +1,22 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@/lib/supabase/client";
 
-export default function AuthCallback() {
+export default function Callback() {
+  const router = useRouter()
   const supabase = createBrowserClient();
-  const router = useRouter();
 
   useEffect(() => {
-    const handleSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (session) {
-        const user = session.user;
-
-        // Insert or update profile
-        await supabase.from("profiles").upsert({
-          id: user.id,
-          full_name: user.user_metadata.full_name,
-          email: user.email,
-          avatar_url: user.user_metadata.avatar_url,
-          updated_at: new Date().toISOString(),
-        });
-
-        router.push("/dashboard");
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        router.push("/dashboard") // ✅ send user here
       } else {
-        router.push("/auth/login");
+        router.push("/") // fallback if no session
       }
-    };
+    })
+  }, [router])
 
-    handleSession();
-  }, [router]);
-
-  return <p>Loading...</p>;
+  return <p>Loading...</p>
 }

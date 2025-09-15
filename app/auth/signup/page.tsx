@@ -14,7 +14,7 @@ import { createBrowserClient } from "@/lib/supabase/client";
 
 const Signup: React.FC = () => {
   const supabase = createBrowserClient();
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [email, setEmail] = useState("")
@@ -32,7 +32,7 @@ const Signup: React.FC = () => {
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
-      },
+          },
         },
       });
   
@@ -62,6 +62,7 @@ const Signup: React.FC = () => {
           
           <CardContent className="space-y-6">
             {/* Error Display */}
+            
             {/* Success Display */}
 
             {/* Google Sign Up */}
