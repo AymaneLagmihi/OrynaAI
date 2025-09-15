@@ -42,11 +42,13 @@ import {
   ChevronDown
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
-import { supabase } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const supabase = createBrowserClient();
 
+  // Sample data for demonstration purposes
   const recentOutfits = [
     { id: 1, name: "Casual Friday", items: 4, likes: 23, date: "2 hours ago" },
     { id: 2, name: "Evening Gala", items: 5, likes: 45, date: "1 day ago" },
@@ -64,8 +66,8 @@ const Dashboard = () => {
 
 
   async function signOut() {
-  const { error } = await supabase.auth.signOut()
-}
+    const { error } = await supabase.auth.signOut()
+  } 
 
   return (
     <div className="min-h-screen bg-background">

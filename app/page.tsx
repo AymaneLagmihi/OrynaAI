@@ -66,13 +66,13 @@ export default function Home() {
                   Try Now
                 </Button>
                 
-                <Link href="/login">
+                <Link href="/auth/login">
                   <Button variant="outline" size="sm" className="rounded-xl">
                     Log In
                   </Button>
                 </Link>
 
-                <Link href="/signup">
+                <Link href="/auth//signup">
                   <Button variant="secondary" size="sm" className="rounded-xl">
                     Sign Up
                   </Button>

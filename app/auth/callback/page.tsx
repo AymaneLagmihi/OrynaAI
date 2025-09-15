@@ -1,34 +1,39 @@
-import { NextResponse } from 'next/server'
-// The client you created from the Server-Side Auth instructions
-import { createClient } from '@/lib/supabase/server'
+"use client";
 
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-  // if "next" is in param, use it as the redirect URL
-  let next = searchParams.get('next') ?? '/'
-  if (!next.startsWith('/')) {
-    // if "next" is not a relative URL, use the default
-    next = '/'
-  }
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createBrowserClient } from "@/lib/supabase/client";
 
-  if (code) {
-    const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
-      const isLocalEnv = process.env.NODE_ENV === 'development'
-      if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-        return NextResponse.redirect(`${origin}${next}`)
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+export default function AuthCallback() {
+  const supabase = createBrowserClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        const user = session.user;
+
+        // Insert or update profile
+        await supabase.from("profiles").upsert({
+          id: user.id,
+          full_name: user.user_metadata.full_name,
+          email: user.email,
+          avatar_url: user.user_metadata.avatar_url,
+          updated_at: new Date().toISOString(),
+        });
+
+        router.push("/dashboard");
       } else {
-        return NextResponse.redirect(`${origin}${next}`)
+        router.push("/auth/login");
       }
-    }
-  }
+    };
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    handleSession();
+  }, [router]);
+
+  return <p>Loading...</p>;
 }

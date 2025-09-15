@@ -6,19 +6,33 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, AlertCircle} from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, AlertCircle, Chrome} from "lucide-react";
 import { Toaster, toast } from 'sonner'
-import GoogleLogin from "@/components/(auth)/GoogleAuthLogin";
+// import GoogleLogin from "@/components/auth/GoogleAuthLogin";
 import Link from "next/link";
+import { createBrowserClient } from "@/lib/supabase/client";
 
 
 const Login: React.FC = () => {
+  const supabase = createBrowserClient();
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+
+
+  const handleLoginOauth = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) console.error("Error logging in:", error.message);
+  };
 
 
   return (
@@ -51,7 +65,17 @@ const Login: React.FC = () => {
 
             {/* Google Sign-In Button */}
 
-            <GoogleLogin />
+            <Button 
+              variant="outline" 
+              id="login"
+              className="w-full h-12 border-2 hover:bg-accent/50 transition-all duration-300"
+              onClick={handleLoginOauth}
+              type="button"
+            > 
+                <Chrome className="mr-2 h-4 w-4" />
+                Sign in with Google
+
+            </Button>
 
             {/* Separator */}
 

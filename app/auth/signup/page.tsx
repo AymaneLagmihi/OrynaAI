@@ -6,12 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mail, Lock, User} from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Chrome} from "lucide-react";
 import { Toaster } from 'sonner'
 import Link from "next/link";
-import GoogleSignup from "@/components/(auth)/GoogleAuthSignUp";
+import { createBrowserClient } from "@/lib/supabase/client";
+// import GoogleSignup from "@/components/auth/GoogleAuthSignUp";
 
 const Signup: React.FC = () => {
+  const supabase = createBrowserClient();
+  
   const [showPassword, setShowPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [email, setEmail] = useState("")
@@ -19,6 +22,24 @@ const Signup: React.FC = () => {
   const [name, setName] = useState("")
   const [isLoading, setIsLoading] = useState(false)
     // const [error, setError] = useState("")
+
+
+  const handleSignup = async () => {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`, // redirects back to your app
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+      },
+        },
+      });
+  
+      if (error) {
+        console.error("Google signup error:", error.message);
+      }
+    };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background/95 to-secondary/20 p-4">
@@ -44,7 +65,17 @@ const Signup: React.FC = () => {
             {/* Success Display */}
 
             {/* Google Sign Up */}
-            <GoogleSignup />
+            <Button 
+                variant="outline" 
+                id="signup"
+                className="w-full h-12 border-2 hover:bg-accent/50 transition-all duration-300"
+                onClick={handleSignup}
+                type="button"
+            > 
+                <Chrome className="mr-2 h-4 w-4" />
+                Sign up with Google
+
+            </Button>
 
             {/* Separator */}
 
