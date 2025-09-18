@@ -45,6 +45,8 @@ import {
 import { ModeToggle } from "@/components/mode-toggle";
 import { createClient } from "@/lib/supabase/client";
 
+export const dynamic = 'force-dynamic'
+
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const supabase = createClient();
@@ -64,11 +66,15 @@ const Dashboard = () => {
   ];
 
     const [user, setUser] = useState<any>(null);
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        fetchUser();
+    }, [supabase]);
 
-
-  async function signOut() {
-    const { error } = await supabase.auth.signOut()
-  } 
+  // Render the dashboard
 
   return (
     <div className="min-h-screen bg-background">
