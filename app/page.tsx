@@ -62,21 +62,12 @@ export default function Home() {
                   Experience
                 </Link>
                 
-                <Button variant="outline" size="sm" className="rounded-xl">
-                  Try Now
-                </Button>
-                
-                <Link href="/auth/login">
+                <Link href="/auth">
                   <Button variant="outline" size="sm" className="rounded-xl">
-                    Log In
+                    SignIn
                   </Button>
                 </Link>
 
-                <Link href="/auth//signup">
-                  <Button variant="secondary" size="sm" className="rounded-xl">
-                    Sign Up
-                  </Button>
-                </Link>
                 <ModeToggle/>
               </div>
             </div>
@@ -196,8 +187,8 @@ export default function Home() {
                   <Card className="absolute -bottom-4 -right-4 bg-card/90 backdrop-blur-sm border-0 shadow-elegant w-52">
                     <CardContent className="p-4">
                       <div className="flex items-center space-x-3">
-                        <div className="h-10 w-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                          <TrendingUp className="h-5 w-5 text-accent" />
+                        <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <TrendingUp className="h-5 w-5 text-primary" />
                         </div>
                         <div>
                           <div className="font-semibold text-sm">Trending Now</div>
