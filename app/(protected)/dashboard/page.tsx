@@ -130,7 +130,7 @@ const Dashboard = () => {
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">{user?.user_metadata?.name || "No name set"}</p>
-                        <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{user?.user_metadata?.email || ""}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -143,7 +143,7 @@ const Dashboard = () => {
                       <span>Settings</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout}>
+                    <DropdownMenuItem onClick={async () => await logout()}>
                       <span>Log out</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>

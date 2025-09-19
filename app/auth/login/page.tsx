@@ -4,7 +4,8 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { login , loginWithGoogle } from "@/actions/login"
+import { login } from "@/actions/login"
+import { createClient } from "@/lib/supabase/client"
 import { toast, Toaster } from "sonner"
 
 
@@ -56,7 +57,21 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true)
-      await loginWithGoogle()
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { 
+          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+          queryParams: {
+            prompt: 'consent',
+            access_type: 'offline'
+          }
+        }
+      })
+      
+      if (error) {
+        throw error
+      }
       // The user will be redirected to the OAuth provider's page
     } catch (error) {
       console.error("Google login error:", error)

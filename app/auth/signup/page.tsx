@@ -3,9 +3,10 @@
 import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
-import { toast } from "sonner"
+import { toast , Toaster } from "sonner"
 import { useRouter } from "next/navigation"
-import { signupWithGoogle , signup } from "@/actions/sign-up"
+import { signup } from "@/actions/sign-up"
+import { createClient } from "@/lib/supabase/client"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -76,7 +77,21 @@ export default function SignUpPage() {
 
     const handleGoogle = async () => {
       try {
-        await signupWithGoogle()
+        const supabase = createClient()
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: { 
+            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+            queryParams: {
+              prompt: 'select_account'
+            }
+          }
+        })
+        
+        if (error) {
+          throw error
+        }
+        
       } catch (err: any) {
         console.error(err.message)
         toast.error('Google Signup Failed',{
@@ -290,5 +305,6 @@ export default function SignUpPage() {
             </Card>
           </div>
       </div>
+      <Toaster />
     </div>
   )}
