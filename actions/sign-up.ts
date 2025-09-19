@@ -7,8 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 export async function signup(email: string, password: string, name: string) {
   const supabase = await createClient();
   const redirectTo = process.env.NODE_ENV === "development"
-    ? "http://localhost:3000/login"
-    : `${process.env.NEXT_PUBLIC_APP_URL}/login`;
+    ? "http://localhost:3000/verification"
+    : `${process.env.NEXT_PUBLIC_APP_URL}/verification`;
   
   const { data, error } = await supabase.auth.signUp({
     email,
