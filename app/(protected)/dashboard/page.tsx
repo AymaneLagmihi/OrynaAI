@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   Bell,
   Calendar,
@@ -40,7 +41,8 @@ import {
   Award,
   BarChart3,
   Filter,
-  ChevronDown
+  ChevronDown,
+  Menu
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { createClient } from "@/lib/supabase/client";
@@ -83,31 +85,31 @@ const Dashboard = () => {
           <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl px-6 py-3 shadow-elegant">
             <div className="flex items-center justify-between">
               {/* Logo */}
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-3">
-                  <div className="h-9 w-9 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                    <Wand2 className="h-5 w-5 text-primary-foreground" />
+              <div className="flex items-center space-x-3">
+                <div className="h-9 w-9 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                  <Wand2 className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                  Clothy AI
+                </span>
+              </div>
+
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex flex-1 items-center justify-center">
+                {/* Search */}
+                <div className="w-full max-w-md">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search outfits, items..."
+                      className="w-full pl-10 pr-4 py-2 rounded-xl border bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-card/50"
+                    />
                   </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                    Clothy AI
-                  </span>
                 </div>
               </div>
 
-              {/* Search */}
-              <div className="flex-1 max-w-md mx-8">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search outfits, items..."
-                    className="w-full pl-10 pr-4 py-2 rounded-xl border bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-card/50"
-                  />
-                </div>
-              </div>
-
-              {/* User Menu */}
-              <div className="flex items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-4">
                 <ModeToggle />
 
                 <Button variant="ghost" size="sm" className="relative">
@@ -148,6 +150,61 @@ const Dashboard = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+              </div>
+
+              {/* Mobile Navigation */}
+              <div className="md:hidden">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Menu className="h-6 w-6" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Menu</SheetTitle>
+                    </SheetHeader>
+                    <div className="flex flex-col space-y-4 mt-4">
+                      {/* Search */}
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <input
+                          type="text"
+                          placeholder="Search outfits, items..."
+                          className="w-full pl-10 pr-4 py-2 rounded-xl border bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-card/50"
+                        />
+                      </div>
+
+                      <Separator />
+
+                      {/* Menu Items */}
+                      <div className="flex flex-col space-y-2">
+                        <Button variant="ghost" className="justify-start">
+                          <User className="mr-2 h-4 w-4" />
+                          Profile
+                        </Button>
+                        <Button variant="ghost" className="justify-start">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Settings
+                        </Button>
+                        <Button variant="ghost" className="justify-start">
+                          <Bell className="mr-2 h-4 w-4" />
+                          Notifications
+                        </Button>
+                        <div className="flex justify-between items-center p-2">
+                            <span>Theme</span>
+                            <ModeToggle />
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <Button variant="ghost" className="justify-start" onClick={async () => await logout()}>
+                        Log out
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
           </div>

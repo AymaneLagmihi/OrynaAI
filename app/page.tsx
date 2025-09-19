@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { 
   Upload, 
   Sparkles, 
@@ -22,7 +23,8 @@ import {
   CheckCircle,
   Globe,
   MessageCircle,
-  Play
+  Play,
+  Menu
 } from "lucide-react";
 import Image from "next/image";
 import heroImage from "@/public/image.png";
@@ -42,33 +44,60 @@ export default function Home() {
                 </div>
                 <span className="text-xl font-bold bg-gradient-hero bg-clip-text">Clothy AI</span>
               </div>
+              
+              {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-6">
-                <Link
-                  href="#features"
-                  className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
-                >
+                <Link href="#features" className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
                   Features
                 </Link>
-                <Link
-                  href="#showcase"
-                  className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
-                >
+                <Link href="#showcase" className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
                   Showcase
                 </Link>
-                <Link
-                  href="#experience"
-                  className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
-                >
+                <Link href="#experience" className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
                   Experience
                 </Link>
-                
                 <Link href="/auth">
                   <Button variant="outline" size="sm" className="rounded-xl">
                     SignIn
                   </Button>
                 </Link>
-
                 <ModeToggle/>
+              </div>
+
+              {/* Mobile Navigation */}
+              <div className="md:hidden">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Menu className="h-6 w-6" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="flex px-6 pt-6">
+                    <SheetHeader>
+                      <SheetTitle>Menu</SheetTitle>
+                    </SheetHeader>
+                    <div className="flex flex-col space-y-4 mt-4">
+                      <Link href="#features" className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
+                        Features
+                      </Link>
+                      <Link href="#showcase" className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
+                        Showcase
+                      </Link>
+                      <Link href="#experience" className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
+                        Experience
+                      </Link>
+                      <Link href="/auth">
+                        <Button variant="outline" className="w-full rounded-xl">
+                          Sign In
+                        </Button>
+                      </Link>
+                      <div className="flex justify-between items-center pt-4 px-7">
+                        <span>Theme</span>
+                        <ModeToggle/>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
           </nav>
