@@ -154,12 +154,12 @@ const Dashboard = () => {
         </header>
 
         {/* Main Content */}
-        <main className="relative min-h-screen py-8 mt-24">
+        <main className=" flex justify-center min-h-screen py-8 mt-24">
           <div className="container space-y-8">
             {/* Welcome Section */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h1 className="text-3xl font-bold tracking-tight">Welcome back,{user?.user_metadata?.name || "friend"}!</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.user_metadata?.name || "friend"}!</h1>
                 <p className="text-muted-foreground">
                   Here's what's happening with your style journey today.
                 </p>

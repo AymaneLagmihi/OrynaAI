@@ -47,6 +47,5 @@ export async function updateSession(request: NextRequest) {
   // of sync and terminate the user's session prematurely!
 
   await supabase.auth.getUser();
-
   return supabaseResponse;
 }
