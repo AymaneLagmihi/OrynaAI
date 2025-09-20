@@ -35,29 +35,53 @@ async function createSupabaseClient(request: NextRequest) {
 
 // Middleware function to handle authentication and redirection
 export async function middleware(request: NextRequest) {
-  const { supabase, supabaseResponse } = await createSupabaseClient(request);
-  const { 
-    data: { session }, 
-  } = await supabase.auth.getSession();
-
-  const { pathname } = request.nextUrl;
-
-  const authRoutes = ["/auth", "/auth/login", "/auth/signup", "/auth/verification", "/auth/error"];
-  const protectedRoutes = ["/dashboard"];
-
-  if (session) {
-    if (authRoutes.includes(pathname)) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+  try {
+    const { supabase, supabaseResponse } = await createSupabaseClient(request);
+    
+    let session;
+    try {
+      const { data: { session: sessionData }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Session error:', error);
+        // If there's a refresh token error, clear the session
+        if (error.message?.includes('refresh_token_not_found') || error.message?.includes('Invalid Refresh Token')) {
+          await supabase.auth.signOut();
+          session = null;
+        } else {
+          session = sessionData;
+        }
+      } else {
+        session = sessionData;
+      }
+    } catch (error) {
+      console.error('Auth error in middleware:', error);
+      session = null;
     }
-  } else {
-    if (protectedRoutes.some(route => pathname.startsWith(route))) {
-      const redirectUrl = new URL("/auth/login", request.url);
-      redirectUrl.searchParams.set("next", pathname);
-      return NextResponse.redirect(redirectUrl);
+
+    const { pathname } = request.nextUrl;
+
+    const authRoutes = ["/auth", "/auth/login", "/auth/signup", "/auth/verification", "/auth/error"];
+    const protectedRoutes = ["/dashboard"];
+
+    if (session) {
+      if (authRoutes.includes(pathname)) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    } else {
+      if (protectedRoutes.some(route => pathname.startsWith(route))) {
+        const redirectUrl = new URL("/auth/login", request.url);
+        redirectUrl.searchParams.set("next", pathname);
+        return NextResponse.redirect(redirectUrl);
+      }
     }
+
+    return supabaseResponse;
+  } catch (error) {
+    console.error('Middleware error:', error);
+    // In case of any middleware error, allow the request to proceed
+    return NextResponse.next();
   }
-
-  return supabaseResponse;
 }
 
 export const config = {

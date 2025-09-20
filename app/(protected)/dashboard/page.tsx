@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {Navigation} from "@/components/Navigation";
 import {logout} from "@/actions/logout";
 import {
   DropdownMenu,
@@ -44,8 +45,9 @@ import {
   ChevronDown,
   Menu
 } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
 import { createClient } from "@/lib/supabase/client";
+import { handleAuthError } from "@/lib/auth-utils";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic'
 
@@ -68,148 +70,57 @@ const Dashboard = () => {
   ];
 
     const [user, setUser] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    
     useEffect(() => {
         const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error) {
+                    const handled = await handleAuthError(error);
+                    if (!handled) {
+                        console.error('User fetch error:', error);
+                    }
+                } else {
+                    setUser(user);
+                }
+            } catch (error) {
+                await handleAuthError(error);
+            } finally {
+                setLoading(false);
+            }
         };
+        
         fetchUser();
+        
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+                setUser(null);
+            } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                setUser(session.user);
+            }
+        });
+        
+        return () => subscription.unsubscribe();
     }, [supabase]);
 
   // Render the dashboard
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
         {/* Header */}
-        <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl mx-auto px-4">
-          <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl px-6 py-3 shadow-elegant">
-            <div className="flex items-center justify-between">
-              {/* Logo */}
-              <div className="flex items-center space-x-3">
-                <div className="h-9 w-9 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                  <Wand2 className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                  Clothy AI
-                </span>
-              </div>
-
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex flex-1 items-center justify-center">
-                {/* Search */}
-                <div className="w-full max-w-md">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Search outfits, items..."
-                      className="w-full pl-10 pr-4 py-2 rounded-xl border bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-card/50"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="hidden md:flex items-center space-x-4">
-                <ModeToggle />
-
-                <Button variant="ghost" size="sm" className="relative">
-                  <Bell className="h-4 w-4" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                    3
-                  </Badge>
-                </Button>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src="/placeholder-user.jpg" alt="@user" />
-                        <AvatarFallback>JD</AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user?.user_metadata?.name || "No name set"}</p>
-                        <p className="text-xs leading-none text-muted-foreground">{user?.user_metadata?.email || ""}</p>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={async () => await logout()}>
-                      <span>Log out</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              {/* Mobile Navigation */}
-              <div className="md:hidden">
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Menu className="h-6 w-6" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Menu</SheetTitle>
-                    </SheetHeader>
-                    <div className="flex flex-col space-y-4 mt-4">
-                      {/* Search */}
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <input
-                          type="text"
-                          placeholder="Search outfits, items..."
-                          className="w-full pl-10 pr-4 py-2 rounded-xl border bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-card/50"
-                        />
-                      </div>
-
-                      <Separator />
-
-                      {/* Menu Items */}
-                      <div className="flex flex-col space-y-2">
-                        <Button variant="ghost" className="justify-start">
-                          <User className="mr-2 h-4 w-4" />
-                          Profile
-                        </Button>
-                        <Button variant="ghost" className="justify-start">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Settings
-                        </Button>
-                        <Button variant="ghost" className="justify-start">
-                          <Bell className="mr-2 h-4 w-4" />
-                          Notifications
-                        </Button>
-                        <div className="flex justify-between items-center p-2">
-                            <span>Theme</span>
-                            <ModeToggle />
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      <Button variant="ghost" className="justify-start" onClick={async () => await logout()}>
-                        Log out
-                      </Button>
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
-            </div>
-          </div>
-        </header>
-
+        <Navigation />
         {/* Main Content */}
         <main className=" flex justify-center min-h-screen py-8 mt-24">
           <div className="container space-y-8">
@@ -351,10 +262,14 @@ const Dashboard = () => {
                         <Target className="mr-3 h-5 w-5" />
                         AI Style Match
                       </Button>
-                      <Button className="w-full justify-start rounded-xl" variant="ghost">
-                        <Camera className="mr-3 h-5 w-5" />
-                        Virtual Try-On
+
+                      <Button className="w-full justify-start rounded-xl" variant="ghost" asChild>
+                        <Link href="/ai-virtual-tryon">
+                            <Camera className="mr-3 h-5 w-5" />
+                            Virtual Try-On
+                        </Link>
                       </Button>
+
                       <Button className="w-full justify-start rounded-xl" variant="ghost">
                         <Palette className="mr-3 h-5 w-5" />
                         Color Analysis

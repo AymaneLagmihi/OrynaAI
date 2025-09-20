@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { handleAuthError } from "@/lib/auth-utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -32,6 +35,40 @@ import RotatingText from '@/components/RotatingText';
 
 
 export default function Home() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) {
+          await handleAuthError(error);
+        } else {
+          setUser(user);
+        }
+      } catch (error) {
+        await handleAuthError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setUser(null);
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        setUser(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
   return (
       <div className="min-h-screen bg-background">
         {/* Floating Header */}
@@ -56,11 +93,19 @@ export default function Home() {
                 <Link href="#experience" className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
                   Experience
                 </Link>
-                <Link href="/auth">
-                  <Button variant="outline" size="sm" className="rounded-xl">
-                    SignIn
-                  </Button>
-                </Link>
+                {user ? (
+                  <Link href="/dashboard">
+                    <Button variant="outline" size="sm" className="rounded-xl">
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/auth">
+                    <Button variant="outline" size="sm" className="rounded-xl">
+                      SignIn
+                    </Button>
+                  </Link>
+                )}
                 <ModeToggle/>
               </div>
 
@@ -86,11 +131,19 @@ export default function Home() {
                       <Link href="#experience" className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
                         Experience
                       </Link>
-                      <Link href="/auth">
-                        <Button variant="outline" className="w-full rounded-xl">
-                          Sign In
-                        </Button>
-                      </Link>
+                      {user ? (
+                        <Link href="/dashboard">
+                          <Button variant="outline" className="w-full rounded-xl">
+                            Dashboard
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Link href="/auth">
+                          <Button variant="outline" className="w-full rounded-xl">
+                            Sign In
+                          </Button>
+                        </Link>
+                      )}
                       <div className="flex justify-between items-center pt-4 px-7">
                         <span>Theme</span>
                         <ModeToggle/>
