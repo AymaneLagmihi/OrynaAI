@@ -62,10 +62,10 @@ export default function LoginPage() {
         provider: "google",
         options: { 
           redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-          queryParams: {
-            prompt: 'consent',
-            access_type: 'offline'
-          }
+          // queryParams: {
+          //   prompt: 'consent',
+          //   access_type: 'offline'
+          // }
         }
       })
       
