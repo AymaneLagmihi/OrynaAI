@@ -102,7 +102,7 @@ export default function Home() {
                 ) : (
                   <Link href="/auth">
                     <Button variant="outline" size="sm" className="rounded-xl">
-                      SignIn
+                      Get started
                     </Button>
                   </Link>
                 )}
@@ -599,7 +599,7 @@ export default function Home() {
             <Card className="bg-card border-0 shadow-soft hover:shadow-elegant transition-all duration-500 group">
               <CardContent className="p-8 text-center space-y-4">
                 <div className="h-16 w-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto group-hover:bg-accent/20 transition-colors">
-                  <Users className="h-8 w-8 text-accent" />
+                  <Users className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold">15K+</h3>
                 <p className="text-muted-foreground">Active Stylists</p>

@@ -1,6 +1,7 @@
 'use Client';
 
 import React from "react";
+import Link from "next/link";
 import { Wand2, Search, Bell, User, Settings, Menu } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
@@ -83,13 +84,15 @@ export function Navigation() {
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
+                    <DropdownMenuItem asChild>
+                      <Link href='/settings'>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={async () => await logout()}>
-                      <span>Log out</span>
+                      <span>Sign Out</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -126,9 +129,12 @@ export function Navigation() {
                           <User className="mr-2 h-4 w-4" />
                           Profile
                         </Button>
-                        <Button variant="ghost" className="justify-start">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Settings
+
+                        <Button variant="ghost" className="justify-start" asChild>
+                          <Link href='/settings'>
+                            <Settings className="mr-2 h-4 w-4" />
+                            Settings
+                          </Link>
                         </Button>
                         <Button variant="ghost" className="justify-start">
                           <Bell className="mr-2 h-4 w-4" />
@@ -143,7 +149,7 @@ export function Navigation() {
                       <Separator />
 
                       <Button variant="ghost" className="justify-start" onClick={async () => await logout()}>
-                        Log out
+                        Sign Out
                       </Button>
                     </div>
                   </SheetContent>

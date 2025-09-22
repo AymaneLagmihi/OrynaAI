@@ -1,7 +1,6 @@
 // app/auth/callback/route.ts
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { error } from 'console'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -23,5 +22,3 @@ export async function GET(request: Request) {
   });
   return NextResponse.redirect(`${origin}/auth/error`)
 }
-
-// http://localhost:3000/auth/error#error=server_error&error_code=unexpected_failure&error_description=Unable+to+exchange+external+code%253A+4%252F0AVGzR1AoO7UB4GxZWVZPzUxQtOf7LnI-r6Hhr3vyCmMUjgvsxwvg3wrEnHgJOtOhyrQ2lw

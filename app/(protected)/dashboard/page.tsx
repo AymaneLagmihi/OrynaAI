@@ -270,18 +270,23 @@ const Dashboard = () => {
                         </Link>
                       </Button>
 
-                      <Button className="w-full justify-start rounded-xl" variant="ghost">
-                        <Palette className="mr-3 h-5 w-5" />
-                        Color Analysis
+                      <Button className="w-full justify-start rounded-xl" variant="ghost" asChild>
+                        <Link href="/color-analysis">
+                          <Palette className="mr-3 h-5 w-5" />
+                          Color Analysis
+                        </Link>
                       </Button>
+
                       <Button className="w-full justify-start rounded-xl" variant="ghost">
                         <Users className="mr-3 h-5 w-5" />
                         Style Community
                       </Button>
                       <Separator />
-                      <Button className="w-full rounded-xl">
-                        <Wand2 className="mr-2 h-4 w-4" />
-                        Create New Outfit
+                      <Button className="w-full rounded-xl" asChild >
+                        <Link href="/create-outfit">
+                          <Wand2 className="mr-2 h-4 w-4" />
+                          Create New Outfit
+                        </Link>
                       </Button>
                     </CardContent>
                   </Card>
