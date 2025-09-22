@@ -22,7 +22,7 @@ function ConfirmEmailContent() {
     const supabase = await createClient();
     const token_hash = searchParams.get("token_hash");
     const type = searchParams.get("type") as "signup" | "magiclink" | "invite";
-
+ 
     if (!token_hash || !type) {
       toast.error("Invalid verification link.");
       setLoading(false);
