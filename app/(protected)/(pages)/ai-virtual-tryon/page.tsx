@@ -86,8 +86,8 @@ export default function AIVirtualTryOnPage() {
                 </Button>
             </Link>
             <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-accent/10">
-                <Sparkles className="h-6 w-6 text-accent" />
+                <div className="p-2 rounded-full bg-accent/70">
+                <Sparkles className="h-6 w-6  text-muted-foreground" />
                 </div>
                 <div>
                 <h1 className="text-3xl font-bold text-foreground">AI Virtual Try-On</h1>
@@ -102,7 +102,7 @@ export default function AIVirtualTryOnPage() {
             <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
                 <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <User className="h-5 w-5 text-accent" />
+                    <User className="h-5 w-5 " />
                     <h2 className="text-lg font-semibold text-foreground">Upload Your Photo</h2>
                 </div>
 
@@ -114,6 +114,7 @@ export default function AIVirtualTryOnPage() {
                     <img
                         src={personImage || "/placeholder.svg"}
                         alt="Your photo"
+                        
                         className="w-full h-48 object-cover rounded-lg"
                     />
                     ) : (
@@ -139,7 +140,7 @@ export default function AIVirtualTryOnPage() {
             <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
                 <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <Shirt className="h-5 w-5 text-accent" />
+                    <Shirt className="h-5 w-5 " />
                     <h2 className="text-lg font-semibold text-foreground">Upload What You Want to Wear</h2>
                 </div>
 
@@ -171,6 +172,17 @@ export default function AIVirtualTryOnPage() {
                 </div>
                 </div>
             </Card>
+            </div>
+            {/* Generate Button */}
+            <div className=" flex justify-center">
+                <Button
+                onClick={handleGenerate}
+                disabled={!personImage || !clothingImage || isGenerating}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-3 text-lg font-medium mb-6"
+                >
+                <Sparkles className="h-5 w-5 mr-2" />
+                {isGenerating ? "Generating..." : "Generate AI Try-On"}
+                </Button>
             </div>
 
             {/* Generate Section */}
@@ -207,16 +219,6 @@ export default function AIVirtualTryOnPage() {
                     </div>
                 )}
                 </div>
-
-                {/* Generate Button */}
-                <Button
-                onClick={handleGenerate}
-                disabled={!personImage || !clothingImage || isGenerating}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-3 text-lg font-medium mb-6"
-                >
-                <Sparkles className="h-5 w-5 mr-2" />
-                {isGenerating ? "Generating..." : "Generate AI Try-On"}
-                </Button>
 
                 {/* Action Buttons */}
                 <div className="flex justify-center gap-4">

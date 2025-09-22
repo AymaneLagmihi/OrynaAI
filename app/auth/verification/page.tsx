@@ -4,7 +4,7 @@ import React, { Suspense } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle , Loader2} from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { toast , Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,7 +19,7 @@ function ConfirmEmailContent() {
 
   const handleVerify = async () => {
     setLoading(true);
-    const supabase = createClient();
+    const supabase = await createClient();
     const token_hash = searchParams.get("token_hash");
     const type = searchParams.get("type") as "signup" | "magiclink" | "invite";
 
