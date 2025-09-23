@@ -77,11 +77,12 @@ export default function SignUpPage() {
 
     const handleGoogle = async () => {
       try {
+        setIsLoading(true)
         const supabase = createClient()
-        const { error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await supabase.auth.signInWithOAuth({
           provider: "google",
           options: { 
-            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+            redirectTo: `${window.location.origin}/auth/callback`,
             queryParams: {
               prompt: 'select_account'
             }
@@ -89,14 +90,19 @@ export default function SignUpPage() {
         })
         
         if (error) {
+          console.error("Google OAuth error:", error)
           throw error
         }
         
+        console.log("Google OAuth initiated:", data)
+        // The user will be redirected to the OAuth provider's page
+        // Don't set loading to false here as the redirect will happen
       } catch (err: any) {
-        console.error(err.message)
+        console.error("Google signup error:", err)
         toast.error('Google Signup Failed',{
           description: err.message || "Google signup failed. Please try again.",
         });
+        setIsLoading(false)
       }
     }
   

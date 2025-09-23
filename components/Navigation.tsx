@@ -68,7 +68,7 @@ export function Navigation() {
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="/placeholder-user.jpg" alt="@user" />
-                        <AvatarFallback>JD</AvatarFallback>
+                        <AvatarFallback>{user?.user_metadata?.avatar_URL}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>

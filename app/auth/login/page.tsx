@@ -43,9 +43,12 @@ export default function LoginPage() {
       const user = await login(email, password)
       console.log("Logged in:", user)
       router.push("/dashboard");
+      toast.success('Success',{
+        description: "Logged in successfully!",
+      });
     } catch (err: any) {
-      console.error("Login error:", err)
-      toast.error('Google Signin Failed',{
+        console.error("Login error:", err)
+        toast.error('Google Signin Failed',{
         description: err.message || "Login failed. Please check your credentials..",
       });
     } finally {
@@ -58,21 +61,24 @@ export default function LoginPage() {
     try {
       setIsLoading(true)
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { 
-          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-          // queryParams: {
-          //   prompt: 'consent',
-          //   access_type: 'offline'
-          // }
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            prompt: 'select_account'
+          }
         }
       })
       
       if (error) {
+        console.error("Google OAuth error:", error)
         throw error
       }
+      
+      console.log("Google OAuth initiated:", data)
       // The user will be redirected to the OAuth provider's page
+      // Don't set loading to false here as the redirect will happen
     } catch (error) {
       console.error("Google login error:", error)
       toast.error("Failed to login with Google. Please try again.")
