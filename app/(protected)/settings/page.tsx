@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { logout } from "@/actions/logout"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState({
@@ -241,16 +242,7 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Theme</Label>
-                  <Select defaultValue="dark">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Light</SelectItem>
-                      <SelectItem value="dark">Dark</SelectItem>
-                      <SelectItem value="system">System</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <ModeToggle />
                 </div>
                 <div className="space-y-2">
                   <Label>Language</Label>

@@ -121,16 +121,6 @@ export function Navigation() {
                       <SheetTitle>Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex flex-col space-y-4 mt-4">
-                      {/* Search */}
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <input
-                          type="text"
-                          placeholder="Search outfits, items..."
-                          className="w-full pl-10 pr-4 py-2 rounded-xl border bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-card/50"
-                        />
-                      </div>
-
                       <Separator />
 
                       {/* Menu Items */}
