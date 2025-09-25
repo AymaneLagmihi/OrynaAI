@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ModeToggle } from "@/components/mode-toggle";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -8,6 +10,7 @@ import { handleAuthError } from "@/lib/auth-utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { 
   Upload, 
   Sparkles, 
