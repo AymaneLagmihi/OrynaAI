@@ -1,11 +1,11 @@
+// app/(protected)/(pages)/ai-virtual-tryon/page.tsx
+
 "use client"
 
 import type React from "react"
-
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-// import { Navigation } from "@/components/navigation"
 import { ArrowLeft, Upload, Download, Share2, Sparkles, User, Shirt } from "lucide-react"
 import Link from "next/link"
 import { Navigation } from "@/components/Navigation"
@@ -46,11 +46,30 @@ export default function AIVirtualTryOnPage() {
 
     setIsGenerating(true)
 
-    setTimeout(() => {
-      // For demo purposes, we'll show a placeholder result
-      setGeneratedImage("/person-wearing-stylish-outfit-virtual-try-on-resul.jpg")
-      setIsGenerating(false)
-    }, 3000)
+    const prompt = "Take the first image of the person and the second image of the clothes. Blend them realistically so that the person is wearing the clothes from the second image. Keep the person’s body, face, and natural proportions unchanged, but fit the clothing accurately onto them. Adjust the perspective, lighting, and shadows to make the result look natural and seamless, as if the person is truly wearing those clothes."
+
+    try {
+        const response = await fetch('/api/generate-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+            console.error('AI generation error:', data.error);
+            setGeneratedImage(null);
+        } else {
+            setGeneratedImage(data.result);
+        }
+    } catch (error) {
+        console.error('Network or API error:', error);
+        setGeneratedImage(null);
+    } finally {
+        setIsGenerating(false);
+    }
   }
 
   const handleSaveImage = () => {
@@ -86,8 +105,8 @@ export default function AIVirtualTryOnPage() {
                 </Button>
             </Link>
             <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-accent/70">
-                <Sparkles className="h-6 w-6  text-muted-foreground" />
+                <div className="p-2 rounded-full bg-accent/10">
+                <Sparkles className="h-6 w-6 text-accent" />
                 </div>
                 <div>
                 <h1 className="text-3xl font-bold text-foreground">AI Virtual Try-On</h1>
@@ -102,7 +121,7 @@ export default function AIVirtualTryOnPage() {
             <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
                 <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <User className="h-5 w-5 " />
+                    <User className="h-5 w-5 text-accent" />
                     <h2 className="text-lg font-semibold text-foreground">Upload Your Photo</h2>
                 </div>
 
@@ -114,7 +133,6 @@ export default function AIVirtualTryOnPage() {
                     <img
                         src={personImage || "/placeholder.svg"}
                         alt="Your photo"
-                        
                         className="w-full h-48 object-cover rounded-lg"
                     />
                     ) : (
@@ -140,7 +158,7 @@ export default function AIVirtualTryOnPage() {
             <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
                 <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <Shirt className="h-5 w-5 " />
+                    <Shirt className="h-5 w-5 text-accent" />
                     <h2 className="text-lg font-semibold text-foreground">Upload What You Want to Wear</h2>
                 </div>
 
@@ -173,17 +191,16 @@ export default function AIVirtualTryOnPage() {
                 </div>
             </Card>
             </div>
+            
             {/* Generate Button */}
-            <div className=" flex justify-center">
-                <Button
+            <Button
                 onClick={handleGenerate}
                 disabled={!personImage || !clothingImage || isGenerating}
                 className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-3 text-lg font-medium mb-6"
-                >
+            >
                 <Sparkles className="h-5 w-5 mr-2" />
                 {isGenerating ? "Generating..." : "Generate AI Try-On"}
-                </Button>
-            </div>
+            </Button>
 
             {/* Generate Section */}
             <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50 mb-8">

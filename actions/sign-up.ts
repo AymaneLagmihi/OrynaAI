@@ -12,8 +12,9 @@ export async function signup(email: string, password: string, name: string) {
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL} `,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}`,
       data: {
+        full_name: name,
         name,
         email,
       }
@@ -21,10 +22,6 @@ export async function signup(email: string, password: string, name: string) {
   });
   
   if (error) throw error;
-  // After successful sign-up, create a profile entry
-  
-  if (data.user) {
-    await upsertProfile(data.user.id, { fullName: name });
-  }
+  // Profile is automatically created by database trigger
   return data;
 }
