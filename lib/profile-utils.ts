@@ -1,8 +1,6 @@
-// lib/profile-utils.ts
 'use server';
 
 import { createClient } from "@/lib/supabase/server";
-import { email } from "zod";
 
 export async function upsertProfile(userId: string, data: { fullName?: string, avatarUrl?: string, email?: string }) {
   const supabase = await createClient();

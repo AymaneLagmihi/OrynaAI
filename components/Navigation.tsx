@@ -24,18 +24,28 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { UserRound } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { logout } from "@/actions/logout";
+import { getProfile } from "@/actions/get-profile";
 
 export function Navigation() {
     const supabase = createClient();
     const [user, setUser] = useState<any>(null);
+    const [profile, setProfile] = useState<any>(null);
+
     useEffect(() => {
-        const fetchUser = async () => {
+        const fetchUserAndProfile = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
+
+            if (user) {
+                // Fetch the profile data for the logged-in user
+                const userProfile = await getProfile(user.id);
+                setProfile(userProfile);
+            }
         };
-        fetchUser();
+        fetchUserAndProfile();
     }, [supabase]);
 
     return (
@@ -67,16 +77,16 @@ export function Navigation() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src="/placeholder-user.jpg" alt="@user" />
-                        <AvatarFallback>{user?.user_metadata?.avatar_URL}</AvatarFallback>
+                        <AvatarImage src={profile?.avatar_url ||  <UserRound />} alt="@user"/>
+                        <AvatarFallback>{profile?.avatar_url || <UserRound />}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user?.user_metadata?.name || "No name set"}</p>
-                        <p className="text-xs leading-none text-muted-foreground">{user?.user_metadata?.email || ""}</p>
+                        <p className="text-sm font-medium leading-none">{profile?.full_name || user?.user_metadata?.name || "No name set"}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{profile?.email || ""}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
