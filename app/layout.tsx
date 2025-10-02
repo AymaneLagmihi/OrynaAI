@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 
 
 export const metadata: Metadata = {
-  title: "LumeAI",
+  title: "OrynaAI",
   description: "Cutting-edge AI technology meets fashion expertise to deliver personalized styling solutions.",
   icons: {
     icon: "/favicon.ico",

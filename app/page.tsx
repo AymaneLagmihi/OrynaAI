@@ -81,7 +81,7 @@ export default function Home() {
                 <div className="h-9 w-9 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
                   <Wand2 className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold bg-gradient-hero bg-clip-text">LumeAI</span>
+                <span className="text-xl font-bold bg-gradient-hero bg-clip-text">OrynaAI</span>
               </div>
               
               {/* Desktop Navigation */}
@@ -693,7 +693,7 @@ export default function Home() {
               <div className="h-8 w-8 bg-gradient-hero rounded-lg flex items-center justify-center dark:bg-gradient-hero">
                 <Wand2 className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="text-lg font-bold bg-gradient-hero bg-clip-text text-transparent dark:bg-gradient-hero">LumeAI</span>
+              <span className="text-lg font-bold bg-gradient-hero bg-clip-text text-transparent dark:bg-gradient-hero">OrynaAI</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Revolutionizing fashion with AI-powered styling solutions.
