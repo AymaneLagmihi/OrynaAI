@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card"
 import { ArrowLeft, Upload, Download, Share2, Sparkles, User, Shirt, Trash2, History } from "lucide-react"
 import Link from "next/link"
 import { Navigation } from "@/components/Navigation"
+import Image from "next/image"
 
 interface SavedImage {
   id: string
@@ -104,7 +105,7 @@ export default function AIVirtualTryOnPage() {
 
   const handleDeleteSavedImage = (id: string) => {
     setSavedImages((prev) => {
-      const updated = prev.filter((img) => img.id !== id)
+      const updated = prev.filter((Image) => Image.id !== id)
       localStorage.setItem("virtualTryOnGallery", JSON.stringify(updated))
       return updated
     })
@@ -139,7 +140,7 @@ export default function AIVirtualTryOnPage() {
                         <div key={saved.id} className="group relative">
                         <Card className="overflow-hidden bg-secondary/20 border-border/50 hover:border-primary/50 transition-all">
                             <div className="aspect-[3/4] relative">
-                            <img
+                            <Image
                                 src={saved.url || "/placeholder.svg"}
                                 alt="Saved virtual try-on"
                                 className="w-full h-full object-cover rounded-lg"
@@ -190,7 +191,7 @@ export default function AIVirtualTryOnPage() {
                     onClick={() => personInputRef.current?.click()}
                     >
                     {personImage ? (
-                        <img
+                        <Image
                         src={personImage || "/placeholder.svg"}
                         alt="Your photo"
                         className="w-full h-32 object-cover rounded-lg"
@@ -224,7 +225,7 @@ export default function AIVirtualTryOnPage() {
                     onClick={() => clothingInputRef.current?.click()}
                     >
                     {clothingImage ? (
-                        <img
+                        <Image
                         src={clothingImage || "/placeholder.svg"}
                         alt="Clothing item"
                         className="w-full h-32 object-cover rounded-lg"
@@ -263,7 +264,7 @@ export default function AIVirtualTryOnPage() {
                         </div>
                     </div>
                     ) : generatedImage ? (
-                    <img
+                    <Image
                         src={generatedImage || "/placeholder.svg"}
                         alt="AI Generated Result"
                         className="w-full h-full object-cover"
