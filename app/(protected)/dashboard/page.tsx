@@ -114,7 +114,7 @@ export default function AIVirtualTryOnPage() {
     <div className="min-h-screen bg-background gradient-bg">
         {/* Header */}
         <Navigation />
-        <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-[1800px] mx-auto px-4 py-25 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6">
             {/* Left Sidebar - Saved Gallery */}
             <div className="lg:sticky lg:top-8 lg:h-[calc(100vh-120px)] lg:overflow-y-auto">

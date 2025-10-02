@@ -32,6 +32,8 @@ import {
 import Image from "next/image";
 import heroImage from "@/public/image.png";
 import RotatingText from '@/components/RotatingText';
+import { AnimatedThemeToggler } from "@/components/toggle";
+
 
 
 export default function Home() {
@@ -106,7 +108,7 @@ export default function Home() {
                     </Button>
                   </Link>
                 )}
-                <ModeToggle/>
+                <AnimatedThemeToggler />
               </div>
 
               {/* Mobile Navigation */}
@@ -146,7 +148,7 @@ export default function Home() {
                       )}
                       <div className="flex justify-between items-center pt-4 px-7">
                         <span>Theme</span>
-                        <ModeToggle/>
+                        <AnimatedThemeToggler />
                       </div>
                     </div>
                   </SheetContent>

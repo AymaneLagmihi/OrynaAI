@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { ModeToggle } from "./mode-toggle";
+// import { ModeToggle } from "./mode-toggle";
 import {
   Sheet,
   SheetContent,
@@ -28,6 +28,7 @@ import { UserRound } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { logout } from "@/actions/logout";
 import { getProfile } from "@/actions/get-profile";
+import { AnimatedThemeToggler } from "./toggle";
 
 export function Navigation() {
     const supabase = createClient();
@@ -64,7 +65,8 @@ export function Navigation() {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-4">
-                <ModeToggle />
+
+                <AnimatedThemeToggler />
 
                 <Button variant="ghost" size="sm" className="relative">
                   <Bell className="h-4 w-4" />
@@ -140,7 +142,7 @@ export function Navigation() {
                         </Button>
                         <div className="flex justify-between items-center p-2">
                             <span>Theme</span>
-                            <ModeToggle />
+                            <AnimatedThemeToggler />
                         </div>
                       </div>
 
