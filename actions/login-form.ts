@@ -2,9 +2,16 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { upsertProfile } from "@/lib/profile-utils";
+import { redirect } from "next/navigation";
 
-// Login with email & password
-export async function login(email: string, password: string) {
+export async function loginFormAction(formData: FormData) {
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+
+  if (!email || !password) {
+    throw new Error("Email and password are required");
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -30,6 +37,6 @@ export async function login(email: string, password: string) {
     }
   }
   
-  // Return the data for the component to handle navigation
-  return data;
+  // Redirect to dashboard on successful login
+  redirect('/dashboard');
 }

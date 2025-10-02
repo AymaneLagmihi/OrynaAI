@@ -1,4 +1,4 @@
-'use Client';
+'use client';
 
 import React from "react";
 import Link from "next/link";
@@ -58,7 +58,7 @@ export function Navigation() {
                   <Wand2 className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                  Clothy AI
+                  LumeAI
                 </span>
               </div>
 
@@ -77,8 +77,8 @@ export function Navigation() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={profile?.avatar_url ||  <UserRound />} alt="@user"/>
-                        <AvatarFallback>{profile?.avatar_url || <UserRound />}</AvatarFallback>
+                        <AvatarImage src={profile?.avatar_url} alt="@user"/>
+                        <AvatarFallback><UserRound className="h-4 w-4" /></AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>

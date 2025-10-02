@@ -1,406 +1,325 @@
-'use client';
+"use client"
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {Navigation} from "@/components/Navigation";
-import {logout} from "@/actions/logout";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import {
-  Bell,
-  Calendar,
-  Camera,
-  Heart,
-  Home,
-  PlusCircle,
-  Search,
-  Settings,
-  Shirt,
-  ShoppingBag,
-  Star,
-  TrendingUp,
-  User,
-  Users,
-  Wand2,
-  Sparkles,
-  Target,
-  Palette,
-  Clock,
-  Award,
-  BarChart3,
-  Filter,
-  ChevronDown,
-  Menu
-} from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { handleAuthError } from "@/lib/auth-utils";
-import Link from "next/link";
+import type React from "react"
+import { useState, useRef, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { ArrowLeft, Upload, Download, Share2, Sparkles, User, Shirt, Trash2, History } from "lucide-react"
+import Link from "next/link"
+import { Navigation } from "@/components/Navigation"
 
-export const dynamic = 'force-dynamic'
+interface SavedImage {
+  id: string
+  url: string
+  timestamp: number
+  personImage: string
+  clothingImage: string
+}
 
-const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("overview");
-  const supabase = createClient();
+export default function AIVirtualTryOnPage() {
+  const [personImage, setPersonImage] = useState<string | null>(null)
+  const [clothingImage, setClothingImage] = useState<string | null>(null)
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [savedImages, setSavedImages] = useState<SavedImage[]>([])
 
-  // Sample data for demonstration purposes
-  const recentOutfits = [
-    { id: 1, name: "Casual Friday", items: 4, likes: 23, date: "2 hours ago" },
-    { id: 2, name: "Evening Gala", items: 5, likes: 45, date: "1 day ago" },
-    { id: 3, name: "Weekend Brunch", items: 3, likes: 18, date: "3 days ago" },
-  ];
+  const personInputRef = useRef<HTMLInputElement>(null)
+  const clothingInputRef = useRef<HTMLInputElement>(null)
 
-  const styleStats = [
-    { category: "Casual", percentage: 45, count: 28 },
-    { category: "Formal", percentage: 30, count: 18 },
-    { category: "Business", percentage: 15, count: 9 },
-    { category: "Party", percentage: 10, count: 6 },
-  ];
+  useEffect(() => {
+    const saved = localStorage.getItem("virtualTryOnGallery")
+    if (saved) {
+      setSavedImages(JSON.parse(saved))
+    }
+  }, [])
 
-    const [user, setUser] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const { data: { user }, error } = await supabase.auth.getUser();
-                if (error) {
-                    const handled = await handleAuthError(error);
-                    if (!handled) {
-                        console.error('User fetch error:', error);
-                    }
-                } else {
-                    setUser(user);
-                }
-            } catch (error) {
-                await handleAuthError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        
-        fetchUser();
-        
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_OUT' || !session) {
-                setUser(null);
-            } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                setUser(session.user);
-            }
-        });
-        
-        return () => subscription.unsubscribe();
-    }, [supabase]);
+  useEffect(() => {
+    if (savedImages.length > 0) {
+      localStorage.setItem("virtualTryOnGallery", JSON.stringify(savedImages))
+    }
+  }, [savedImages])
 
-  // Render the dashboard
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
+  const handlePersonImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setPersonImage(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleClothingImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setClothingImage(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleGenerate = async () => {
+    if (!personImage || !clothingImage) return
+
+    setIsGenerating(true)
+
+    setTimeout(() => {
+      const resultImage = "/person-wearing-stylish-outfit-virtual-try-on-resul.jpg"
+      setGeneratedImage(resultImage)
+
+      const newSavedImage: SavedImage = {
+        id: Date.now().toString(),
+        url: resultImage,
+        timestamp: Date.now(),
+        personImage: personImage,
+        clothingImage: clothingImage,
+      }
+      setSavedImages((prev) => [newSavedImage, ...prev])
+
+      setIsGenerating(false)
+    }, 3000)
+  }
+
+  const handleSaveImage = () => {
+    if (generatedImage) {
+      const link = document.createElement("a")
+      link.href = generatedImage
+      link.download = "virtual-tryon-result.png"
+      link.click()
+    }
+  }
+
+  const handleShare = () => {
+    if (generatedImage && navigator.share) {
+      navigator.share({
+        title: "My Virtual Try-On Result",
+        text: "Check out my AI-generated outfit!",
+        url: window.location.href,
+      })
+    }
+  }
+
+  const handleDeleteSavedImage = (id: string) => {
+    setSavedImages((prev) => {
+      const updated = prev.filter((img) => img.id !== id)
+      localStorage.setItem("virtualTryOnGallery", JSON.stringify(updated))
+      return updated
+    })
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background gradient-bg">
         {/* Header */}
         <Navigation />
-        {/* Main Content */}
-        <main className=" flex justify-center min-h-screen py-8 mt-24">
-          <div className="container space-y-8">
-            {/* Welcome Section */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.user_metadata?.name || "friend"}!</h1>
-                <p className="text-muted-foreground">
-                  Here's what's happening with your style journey today.
-                </p>
-              </div>
-              <div className="flex space-x-3">
-                <Button className="rounded-xl">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Add Items
-                </Button>
-                <Button variant="outline" className="rounded-xl">
-                  <Camera className="mr-2 h-4 w-4" />
-                  Try On
-                </Button>
-              </div>
+        <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6">
+            {/* Left Sidebar - Saved Gallery */}
+            <div className="lg:sticky lg:top-8 lg:h-[calc(100vh-120px)] lg:overflow-y-auto">
+                <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50 h-full">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                    <History className="h-5 w-5 text-primary" />
+                    <h2 className="text-lg font-semibold text-foreground">Saved Gallery</h2>
+                    </div>
+                    <span className="text-xs text-muted-foreground">{savedImages.length}</span>
+                </div>
+
+                {savedImages.length === 0 ? (
+                    <div className="text-center py-8">
+                    <History className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+                    <p className="text-muted-foreground text-sm">No saved images yet</p>
+                    <p className="text-xs text-muted-foreground mt-1">Generate to see results here</p>
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                    {savedImages.map((saved) => (
+                        <div key={saved.id} className="group relative">
+                        <Card className="overflow-hidden bg-secondary/20 border-border/50 hover:border-primary/50 transition-all">
+                            <div className="aspect-[3/4] relative">
+                            <img
+                                src={saved.url || "/placeholder.svg"}
+                                alt="Saved virtual try-on"
+                                className="w-full h-full object-cover rounded-lg"
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => {
+                                    const link = document.createElement("a")
+                                    link.href = saved.url
+                                    link.download = `virtual-tryon-${saved.id}.png`
+                                    link.click()
+                                }}
+                                >
+                                <Download className="h-4 w-4" />
+                                </Button>
+                                <Button size="sm" variant="destructive" onClick={() => handleDeleteSavedImage(saved.id)}>
+                                <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            </div>
+                            <div className="p-2">
+                            <p className="text-xs text-muted-foreground">
+                                {new Date(saved.timestamp).toLocaleDateString()}
+                            </p>
+                            </div>
+                        </Card>
+                        </div>
+                    ))}
+                    </div>
+                )}
+                </Card>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="bg-card border-0 shadow-soft hover:shadow-elegant transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Items</CardTitle>
-                  <Shirt className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">142</div>
-                  <p className="text-xs text-muted-foreground">
-                    <TrendingUp className="inline h-3 w-3 mr-1" />
-                    +12 from last month
-                  </p>
-                </CardContent>
-              </Card>
+            {/* Right Side - Generate Section */}
+            <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Upload Your Photo */}
+                <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+                    <div className="flex items-center gap-2 mb-3">
+                    <User className="h-4 w-4 text-accent" />
+                    <h3 className="text-sm font-semibold text-foreground">Upload Your Photo</h3>
+                    </div>
 
-              <Card className="bg-card border-0 shadow-soft hover:shadow-elegant transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Outfits Created</CardTitle>
-                  <Wand2 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">89</div>
-                  <p className="text-xs text-muted-foreground">
-                    <TrendingUp className="inline h-3 w-3 mr-1" />
-                    +7 this week
-                  </p>
-                </CardContent>
-              </Card>
+                    <div
+                    className="relative border-2 border-dashed border-border/50 rounded-lg p-4 hover:border-accent/50 transition-colors cursor-pointer"
+                    onClick={() => personInputRef.current?.click()}
+                    >
+                    {personImage ? (
+                        <img
+                        src={personImage || "/placeholder.svg"}
+                        alt="Your photo"
+                        className="w-full h-32 object-cover rounded-lg"
+                        />
+                    ) : (
+                        <div className="text-center">
+                        <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-xs text-muted-foreground">Click to upload</p>
+                        </div>
+                    )}
 
-              <Card className="bg-card border-0 shadow-soft hover:shadow-elegant transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Style Score</CardTitle>
-                  <Star className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">96%</div>
-                  <p className="text-xs text-muted-foreground">
-                    <Award className="inline h-3 w-3 mr-1" />
-                    Fashion Expert level
-                  </p>
-                </CardContent>
-              </Card>
+                    <input
+                        ref={personInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePersonImageUpload}
+                        className="hidden"
+                    />
+                    </div>
+                </Card>
 
-              <Card className="bg-card border-0 shadow-soft hover:shadow-elegant transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Community Likes</CardTitle>
-                  <Heart className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">1,234</div>
-                  <p className="text-xs text-muted-foreground">
-                    <TrendingUp className="inline h-3 w-3 mr-1" />
-                    +89 this week
-                  </p>
-                </CardContent>
-              </Card>
+                {/* Upload Clothing */}
+                <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+                    <div className="flex items-center gap-2 mb-3">
+                    <Shirt className="h-4 w-4 text-accent" />
+                    <h3 className="text-sm font-semibold text-foreground">Upload Clothing</h3>
+                    </div>
+
+                    <div
+                    className="relative border-2 border-dashed border-border/50 rounded-lg p-4 hover:border-accent/50 transition-colors cursor-pointer"
+                    onClick={() => clothingInputRef.current?.click()}
+                    >
+                    {clothingImage ? (
+                        <img
+                        src={clothingImage || "/placeholder.svg"}
+                        alt="Clothing item"
+                        className="w-full h-32 object-cover rounded-lg"
+                        />
+                    ) : (
+                        <div className="text-center">
+                        <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-xs text-muted-foreground">Click to upload</p>
+                        </div>
+                    )}
+
+                    <input
+                        ref={clothingInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleClothingImageUpload}
+                        className="hidden"
+                    />
+                    </div>
+                </Card>
+                </div>
+
+                <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+                <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Generate Section</h3>
+
+                {/* AI Generation Area - Smaller */}
+                <div
+                    className="relative bg-secondary/20 rounded-lg overflow-hidden mb-4"
+                    style={{ aspectRatio: "3/4", maxHeight: "400px" }}
+                >
+                    {isGenerating ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                        <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-3"></div>
+                        <p className="text-foreground font-medium">AI is blending...</p>
+                        </div>
+                    </div>
+                    ) : generatedImage ? (
+                    <img
+                        src={generatedImage || "/placeholder.svg"}
+                        alt="AI Generated Result"
+                        className="w-full h-full object-cover"
+                    />
+                    ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center px-4">
+                        <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                        <p className="text-muted-foreground text-sm">Your result will appear here</p>
+                        </div>
+                    </div>
+                    )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                    onClick={handleGenerate}
+                    disabled={!personImage || !clothingImage || isGenerating}
+                    className="bg-accent hover:bg-accent/90 text-accent-foreground flex-1"
+                    >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    {isGenerating ? "Generating..." : "Generate"}
+                    </Button>
+                    <Button variant="outline" onClick={handleSaveImage} disabled={!generatedImage}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Save
+                    </Button>
+                    <Button variant="outline" onClick={handleShare} disabled={!generatedImage}>
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share
+                    </Button>
+                </div>
+                </Card>
+
+                {/* Virtual Try-On Tips */}
+                <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+                <h3 className="text-sm font-semibold text-foreground mb-3">Tips for Best Results</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-muted-foreground">
+                    <div>
+                    <h4 className="text-foreground font-medium mb-1">Photo Quality</h4>
+                    <p>Use high-resolution images with good lighting for best results.</p>
+                    </div>
+                    <div>
+                    <h4 className="text-foreground font-medium mb-1">Person Pose</h4>
+                    <p>Stand straight facing the camera with arms slightly away from body.</p>
+                    </div>
+                    <div>
+                    <h4 className="text-foreground font-medium mb-1">Clothing Images</h4>
+                    <p>Use clear product photos or flat lay images of clothing items.</p>
+                    </div>
+                </div>
+                </Card>
             </div>
-
-            {/* Dashboard Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-md grid-cols-3 bg-muted/50 dark:bg-muted/30 rounded-xl">
-                <TabsTrigger value="overview" className="rounded-lg">Overview</TabsTrigger>
-                <TabsTrigger value="wardrobe" className="rounded-lg">Wardrobe</TabsTrigger>
-                <TabsTrigger value="analytics" className="rounded-lg">Analytics</TabsTrigger>
-              </TabsList>
-
-              {/* Overview Tab */}
-              <TabsContent value="overview" className="space-y-6">
-                <div className="grid gap-6 lg:grid-cols-7">
-                  {/* Recent Outfits */}
-                  <Card className="lg:col-span-4 bg-card border-0 shadow-elegant">
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <Sparkles className="mr-2 h-5 w-5" />
-                        Recent Outfits
-                      </CardTitle>
-                      <CardDescription>Your latest style creations</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {recentOutfits.map((outfit) => (
-                        <div key={outfit.id} className="flex items-center justify-between p-4 bg-muted/30 dark:bg-muted/60 rounded-xl hover:bg-muted/50 dark:hover:bg-muted/70 transition-colors">
-                          <div className="flex items-center space-x-4">
-                            <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                              <Shirt className="h-6 w-6 text-primary" />
-                            </div>
-                            <div>
-                              <h4 className="font-medium">{outfit.name}</h4>
-                              <p className="text-sm text-muted-foreground">
-                                {outfit.items} items • {outfit.likes} likes
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <Badge variant="secondary" className="mb-1">
-                              <Clock className="mr-1 h-3 w-3" />
-                              {outfit.date}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                      <Button variant="outline" className="w-full rounded-xl">
-                        View All Outfits
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Quick Actions */}
-                  <Card className="lg:col-span-3 bg-card border-0 shadow-elegant">
-                    <CardHeader>
-                      <CardTitle>Quick Actions</CardTitle>
-                      <CardDescription>Style yourself in seconds</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <Button className="w-full justify-start rounded-xl" variant="ghost">
-                        <Target className="mr-3 h-5 w-5" />
-                        AI Style Match
-                      </Button>
-
-                      <Button className="w-full justify-start rounded-xl" variant="ghost" asChild>
-                        <Link href="/ai-virtual-tryon">
-                            <Camera className="mr-3 h-5 w-5" />
-                            Virtual Try-On
-                        </Link>
-                      </Button>
-
-                      <Button className="w-full justify-start rounded-xl" variant="ghost" asChild>
-                        <Link href="/color-analysis">
-                          <Palette className="mr-3 h-5 w-5" />
-                          Color Analysis
-                        </Link>
-                      </Button>
-
-                      <Button className="w-full justify-start rounded-xl" variant="ghost">
-                        <Users className="mr-3 h-5 w-5" />
-                        Style Community
-                      </Button>
-                      <Separator />
-                      <Button className="w-full rounded-xl" asChild >
-                        <Link href="/create-outfit">
-                          <Wand2 className="mr-2 h-4 w-4" />
-                          Create New Outfit
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              {/* Wardrobe Tab */}
-              <TabsContent value="wardrobe" className="space-y-6">
-                <div className="grid gap-6 lg:grid-cols-3">
-                  <Card className="lg:col-span-2 bg-card border-0 shadow-elegant">
-                    <CardHeader className="flex flex-row items-center justify-between">
-                      <div>
-                        <CardTitle>Wardrobe Overview</CardTitle>
-                        <CardDescription>Your digital closet at a glance</CardDescription>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        <Filter className="mr-2 h-4 w-4" />
-                        Filter
-                      </Button>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-4 gap-4">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                          <div key={item} className="aspect-square bg-muted/30 dark:bg-muted/60 rounded-xl border-2 border-dashed border-muted-foreground/20 flex items-center justify-center group hover:border-primary/50 hover:bg-muted/50 dark:hover:bg-muted/70 transition-colors cursor-pointer">
-                            <Shirt className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-card border-0 shadow-elegant">
-                    <CardHeader>
-                      <CardTitle>Categories</CardTitle>
-                      <CardDescription>Browse by type</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {["Tops", "Bottoms", "Dresses", "Shoes", "Accessories"].map((category) => (
-                        <div key={category} className="flex items-center justify-between p-3 bg-muted/30 dark:bg-muted/60 rounded-xl hover:bg-muted/50 dark:hover:bg-muted/70 transition-colors">
-                          <span className="font-medium">{category}</span>
-                          <Badge variant="secondary">
-                            {Math.floor(Math.random() * 20) + 5}
-                          </Badge>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              {/* Analytics Tab */}
-              <TabsContent value="analytics" className="space-y-6">
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <Card className="bg-card border-0 shadow-elegant">
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <BarChart3 className="mr-2 h-5 w-5" />
-                        Style Distribution
-                      </CardTitle>
-                      <CardDescription>Your fashion preferences breakdown</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {styleStats.map((stat) => (
-                        <div key={stat.category} className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="font-medium">{stat.category}</span>
-                            <span className="text-muted-foreground">{stat.count} items</span>
-                          </div>
-                          <Progress value={stat.percentage} className="h-2" />
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-card border-0 shadow-elegant">
-                    <CardHeader>
-                      <CardTitle>Weekly Activity</CardTitle>
-                      <CardDescription>Your styling journey this week</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Outfits Created</span>
-                          <Badge variant="secondary">7 this week</Badge>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Items Added</span>
-                          <Badge variant="secondary">12 this week</Badge>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Community Interactions</span>
-                          <Badge variant="secondary">89 this week</Badge>
-                        </div>
-                      </div>
-                      <Separator />
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium">Achievement Progress</h4>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-xs">
-                            <span>Style Streak</span>
-                            <span>12/30 days</span>
-                          </div>
-                          <Progress value={40} className="h-1" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+            </div>
         </main>
-      </div>
-  );
-};
-
-export default Dashboard;
+    </div>
+  )
+}
