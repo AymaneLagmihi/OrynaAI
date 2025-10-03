@@ -1,29 +1,49 @@
-// app/api/generate-image/route.ts
+import { NextResponse } from "next/server";
 
-import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-// Initialize the Google Generative AI client
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
-
+// POST /api/blend
 export async function POST(req: Request) {
   try {
-    const { prompt } = await req.json();
+    const formData = await req.formData();
 
-    if (!prompt) {
-      return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
+    // Expect images + prompt from client
+    const image1 = formData.get("image1") as File | null;
+    const image2 = formData.get("image2") as File | null;
+    const prompt = formData.get("prompt") as string;
+
+    if (!image1 || !image2 || !prompt) {
+      return NextResponse.json(
+        { error: "image1, image2, and prompt are required" },
+        { status: 400 }
+      );
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+    // Prepare multipart/form-data to forward to OpenRouter
+    const body = new FormData();
+    body.append("images", image1);
+    body.append("images", image2);
+    body.append("prompt", prompt);
 
-    // Generate content based on the prompt
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const response = await fetch("https://openrouter.ai/api/v1/images", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY!}`,
+      },
+      body,
+    });
 
-    return NextResponse.json({ result: text });
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(err);
+    }
+
+    const data = await response.json();
+
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error calling Google Generative AI:', error);
-    return NextResponse.json({ error: 'Failed to generate content from AI' }, { status: 500 });
+    console.error("Error calling OpenRouter:", error);
+    return NextResponse.json(
+      { error: "Failed to blend images" },
+      { status: 500 }
+    );
   }
 }
