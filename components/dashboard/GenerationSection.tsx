@@ -53,10 +53,15 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
     formData.append("image2", clothingImage);
     formData.append("promptText", prompt);
 
-    const res = await fetch("/api/blend", {
+    const res = await fetch("/api/google-genai", {
       method: "POST",
       body: formData,
     });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
 
     const data = await res.json();
     setIsGenerating(false);
