@@ -22,9 +22,11 @@ interface GenerationSectionProps {
 export function GenerationSection({ onGenerationComplete }: GenerationSectionProps) {
   const [personImage, setPersonImage] = useState<File | null>(null)
   const [clothingImage, setClothingImage] = useState<File | null>(null)
-  const prompt = 'Take the first image of the person and the second image of the clothes. Blend them realistically so that the person is wearing the clothes from the second image. Keep the person’s body, face, and natural proportions unchanged, but fit the clothing accurately onto them. Adjust the perspective, lighting, and shadows to make the result look natural and seamless, as if the person is truly wearing those clothes.'
+  const [prompt, setPrompt] = useState("Take the first image of the person and the second image of the clothes. Blend them realistically so that the person is wearing the clothes from the second image. Keep the person’s body, face, and natural proportions unchanged, but fit the clothing accurately onto them. Adjust the perspective, lighting, and shadows to make the result look natural and seamless, as if the person is truly wearing those clothes.");
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 
   const personInputRef = useRef<HTMLInputElement>(null)
   const clothingInputRef = useRef<HTMLInputElement>(null)
@@ -47,36 +49,46 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
 
     setIsGenerating(true);
     setGeneratedImage(null);
+    setErrorMessage(null);
 
     const formData = new FormData();
     formData.append("image1", personImage);
     formData.append("image2", clothingImage);
     formData.append("promptText", prompt);
 
-    const res = await fetch("api/openrouter", { // Make sure this URL is correct
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch("/api/openrouter", {
+        method: "POST",
+        body: formData,
+      });
 
-    const data = await res.json(); // This receives the data from your API
-    setIsGenerating(false);
+      const data = await res.json();
+      setIsGenerating(false);
 
-    if (data?.data?.[0]?.url) { // This accesses the URL from the JSON
-      const imageUrl = data.data[0].url;
-      setGeneratedImage(imageUrl); // This updates the state to show the image
+      if (res.ok && data?.data?.[0]?.url) {
+        const imageUrl = data.data[0].url;
+        setGeneratedImage(imageUrl);
 
-      const newSaved: SavedImage = {
-        id: crypto.randomUUID(),
-        url: imageUrl,
-        timestamp: Date.now(),
-        personImage: URL.createObjectURL(personImage),
-        clothingImage: URL.createObjectURL(clothingImage),
-      };
-      onGenerationComplete(newSaved);
-    } else {
-      console.error("Unexpected response:", data);
+        const newSaved: SavedImage = {
+          id: crypto.randomUUID(),
+          url: imageUrl,
+          timestamp: Date.now(),
+          personImage: URL.createObjectURL(personImage),
+          clothingImage: URL.createObjectURL(clothingImage),
+        };
+        onGenerationComplete(newSaved);
+      } else {
+        const message = data?.error || "Unexpected response from AI service.";
+        console.error("Unexpected response:", data);
+        setErrorMessage(message);
+      }
+    } catch (err) {
+      console.error("Network or server error:", err);
+      setErrorMessage("An error occurred while generating. Please try again.");
+      setIsGenerating(false);
     }
   };
+
 
   const handleSaveImage = () => {
     if (generatedImage) {

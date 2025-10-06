@@ -7,47 +7,67 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const image1 = formData.get("image1") as File;
     const image2 = formData.get("image2") as File;
-    const promptText = formData.get("promptText") as string;
+    const promptText =
+      formData.get("promptText") || "Blend these two images together realistically.";
 
     if (!image1 || !image2) {
       return NextResponse.json({ error: "Missing images" }, { status: 400 });
     }
 
-    // Convert images to Base64
+    // Convert to base64
     const arrayBuffer1 = await image1.arrayBuffer();
     const arrayBuffer2 = await image2.arrayBuffer();
     const base64Image1 = Buffer.from(arrayBuffer1).toString("base64");
     const base64Image2 = Buffer.from(arrayBuffer2).toString("base64");
 
-    // OpenRouter API call for image generation/blending
+    // Call OpenRouter
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash-image-preview",
-        prompt: `${promptText}. Blend the following two images together:`,
-        images: [
-          `data:${image1.type || "image/png"};base64,${base64Image1}`,
-          `data:${image2.type || "image/png"};base64,${base64Image2}`
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: promptText },
+              { type: "image_url", image_url: `data:${image1.type};base64,${base64Image1}` },
+              { type: "image_url", image_url: `data:${image2.type};base64,${base64Image2}` },
+            ],
+          },
         ],
-        size: "1024x1024"
       }),
     });
 
     const data = await response.json();
+    console.log("OpenRouter response:", JSON.stringify(data, null, 2));
 
-    if (!data?.data?.[0]?.url) {
-      return NextResponse.json({ error: "No image generated" }, { status: 500 });
+    // ✅ Safe extraction
+    const content = data?.choices?.[0]?.message?.content;
+    let generatedImage: string | undefined;
+
+    if (Array.isArray(content)) {
+      generatedImage = content.find((c: any) => c.type === "image_url")?.image_url;
+    } else if (typeof content === "object" && content?.type === "image_url") {
+      generatedImage = content.image_url;
+    } else if (typeof content === "string" && content.startsWith("http")) {
+      generatedImage = content;
     }
 
-    const imageUrl = data.data[0].url;
+    if (!generatedImage) {
+      return NextResponse.json({ error: "No image generated", raw: data }, { status: 500 });
+    }
 
-    return NextResponse.json({ data: [{ url: imageUrl }] });
-  } catch (err: any) {
-    console.error("OpenRouter Blend Error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ data: [{ url: generatedImage }] });
+
+  } catch (error) {
+    console.error("Error in /api/openrouter:", error);
+    return NextResponse.json(
+      { error: "Internal server error", details: String(error) },
+      { status: 500 }
+    );
   }
 }
