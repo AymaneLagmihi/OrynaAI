@@ -1,16 +1,54 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
+    }
+
+    const generationCost = 3;
+
+    // Fetch the user's current coin balance
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('coins')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !profile) {
+      console.error("Failed to retrieve user profile:", profileError);
+      return NextResponse.json({ error: "Failed to retrieve user profile" }, { status: 500 });
+    }
+
+    const currentCoins = profile.coins;
+    if (currentCoins < generationCost) {
+      return NextResponse.json({ error: "Insufficient coins" }, { status: 403 });
+    }
+
+    // Deduct coins before proceeding with the image generation
+    const { error: deductionError } = await supabase
+      .from('profiles')
+      .update({ coins: currentCoins - generationCost })
+      .eq('id', user.id);
+      
+    if (deductionError) {
+      console.error("Coin deduction failed:", deductionError);
+      return NextResponse.json({ error: "Failed to deduct coins" }, { status: 500 });
+    }
+
     const formData = await req.formData();
     const image1 = formData.get("image1") as File;
     const image2 = formData.get("image2") as File;
-    const promptText =
-      formData.get("promptText") || "Blend these two images together realistically.";
+    const promptText = formData.get("promptText") || "Blend these two images together realistically.";
 
     if (!image1 || !image2) {
+      // This is a redundant check after the formData parsing, but good practice
       return NextResponse.json({ error: "Missing images" }, { status: 400 });
     }
 
@@ -45,7 +83,6 @@ export async function POST(req: Request) {
     const data = await response.json();
     console.log("OpenRouter response:", JSON.stringify(data, null, 2));
 
-    // ✅ Safe extraction
     const content = data?.choices?.[0]?.message?.content;
     let generatedImage: string | undefined;
 

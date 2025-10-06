@@ -6,7 +6,7 @@ export async function getProfile(userId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('profiles')
-    .select('*')
+    .select('* , coins')
     .eq('id', userId)
     .single();
 

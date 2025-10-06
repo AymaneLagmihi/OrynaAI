@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Upload, Download, Share2, Sparkles, User, Shirt, Coins} from "lucide-react"
@@ -26,9 +26,10 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [lumeCoins, setLumeCoins] = useState(100)
-  const GENERATION_COST = 10
+  const [coins, setCoins] =  useState(50); // Example starting coin balance
+  const GENERATION_COST = 3
 
+  // Refs for hidden file input elements
 
   const personInputRef = useRef<HTMLInputElement>(null)
   const clothingInputRef = useRef<HTMLInputElement>(null)
@@ -186,10 +187,6 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
             <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-foreground">Generate Section</h3>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Coins className="h-4 w-4 text-primary" />
-                  <span>{GENERATION_COST} coins per generation</span>
-                </div>
               </div>
 
               <div
@@ -222,7 +219,7 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   onClick={handleSubmit}
-                  disabled={!personImage || !clothingImage || isGenerating || lumeCoins < GENERATION_COST}
+                  disabled={!personImage || !clothingImage || isGenerating || coins < GENERATION_COST}
                   className="bg-accent hover:bg-accent/90 text-accent-foreground flex-1"
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
@@ -238,10 +235,10 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
                 </Button>
               </div>
 
-              {lumeCoins < GENERATION_COST && (
+              {coins < GENERATION_COST && (
                 <div className="mt-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
                   <p className="text-sm text-destructive">
-                    Not enough LumeCoins! You need {GENERATION_COST} coins to generate.
+                    Not enough coins! You need {GENERATION_COST} coins to generate.
                   </p>
                 </div>
               )}

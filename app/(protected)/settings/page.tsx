@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { logout } from "@/actions/logout"
 import { ModeToggle } from "@/components/mode-toggle"
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState({
@@ -31,12 +32,9 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background gradient-bg">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-7 mb-8">
           <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
+            <InteractiveHoverButton text="Back" className="w-30" />
           </Link>
           <div>
             <h1 className="text-3xl font-bold text-foreground">Settings</h1>

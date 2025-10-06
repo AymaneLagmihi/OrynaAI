@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import "@/styles/globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
+import { AuthProvider } from "@/hooks/use-auth";
 
 
 export const metadata: Metadata = {
@@ -34,7 +35,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </ThemeProvider>
         </body>
       </html>
