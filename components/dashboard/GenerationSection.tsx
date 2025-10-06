@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Upload, Download, Share2, Sparkles, User, Shirt } from "lucide-react"
+import { Upload, Download, Share2, Sparkles, User, Shirt, Coins} from "lucide-react"
 import Image from "next/image"
 
 interface SavedImage {
@@ -26,6 +26,8 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [lumeCoins, setLumeCoins] = useState(100)
+  const GENERATION_COST = 10
 
 
   const personInputRef = useRef<HTMLInputElement>(null)
@@ -111,133 +113,141 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Upload Your Photo */}
-          <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
-            <div className="flex items-center gap-2 mb-3">
-              <User className="h-4 w-4 text-accent" />
-              <h3 className="text-sm font-semibold text-foreground">Upload Your Photo</h3>
-            </div>
-
-            <div
-              className="relative aspect-[3/4] border-2 border-dashed border-border/50 rounded-lg hover:border-accent/50 transition-colors cursor-pointer flex items-center justify-center"
-              onClick={() => personInputRef.current?.click()}
-            >
-              {personImage ? (
-                <Image
-                  src={URL.createObjectURL(personImage)}
-                  alt="Your photo"
-                  fill
-                  className="object-cover rounded-lg"
-                />
-              ) : (
-                <div className="text-center p-4">
-                  <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">Click to upload</p>
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+                <div className="flex items-center gap-2 mb-3">
+                  <User className="h-4 w-4 text-accent" />
+                  <h3 className="text-sm font-semibold text-foreground">Upload Your Photo</h3>
                 </div>
-              )}
-              <input
-                  ref={personInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePersonImageUpload}
-                  className="hidden"
-              />
-            </div>
-          </Card>
 
-          {/* Upload Clothing */}
-          <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
-            <div className="flex items-center gap-2 mb-3">
-              <Shirt className="h-4 w-4 text-accent" />
-              <h3 className="text-sm font-semibold text-foreground">Upload Clothing</h3>
+                <div
+                  className="relative border-2 border-dashed border-border/50 rounded-lg p-4 hover:border-accent/50 transition-colors cursor-pointer"
+                  onClick={() => personInputRef.current?.click()}
+                >
+                  {personImage ? (
+                    <img
+                      src={URL.createObjectURL(personImage) || "/placeholder.svg"}
+                      alt="Your photo"
+                      className="w-full fill object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">Click to upload</p>
+                    </div>
+                  )}
+
+                  <input
+                    ref={personInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePersonImageUpload}
+                    className="hidden"
+                  />
+                </div>
+              </Card>
+
+              <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+                <div className="flex items-center gap-2 mb-3">
+                  <Shirt className="h-4 w-4 text-accent" />
+                  <h3 className="text-sm font-semibold text-foreground">Upload Clothing</h3>
+                </div>
+
+                <div
+                  className="relative border-2 border-dashed border-border/50 rounded-lg p-4 hover:border-accent/50 transition-colors cursor-pointer"
+                  onClick={() => clothingInputRef.current?.click()}
+                >
+                  {clothingImage ? (
+                    <img
+                      src={URL.createObjectURL(clothingImage) || "/placeholder.svg"}
+                      alt="Clothing item"
+                      className="w-full fill object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">Click to upload</p>
+                    </div>
+                  )}
+
+                  <input
+                    ref={clothingInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleClothingImageUpload}
+                    className="hidden"
+                  />
+                </div>
+              </Card>
             </div>
 
-            <div
-              className="relative aspect-[3/4] border-2 border-dashed border-border/50 rounded-lg hover:border-accent/50 transition-colors cursor-pointer flex items-center justify-center"
-              onClick={() => clothingInputRef.current?.click()}
+            <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Generate Section</h3>
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Coins className="h-4 w-4 text-primary" />
+                  <span>{GENERATION_COST} coins per generation</span>
+                </div>
+              </div>
+
+              <div
+                className="relative bg-secondary/20 rounded-lg overflow-hidden mb-4"
+                style={{ aspectRatio: "3/4", maxHeight: "400px" }}
               >
-              {clothingImage ? (
-                <Image
-                  src={URL.createObjectURL(clothingImage)}
-                  alt="Clothing item"
-                  fill
-                  className="object-cover rounded-lg"
-                />
-              ) : (
-                <div className="text-center p-4">
-                  <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">Click to upload</p>
+                {isGenerating ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-3"></div>
+                      <p className="text-foreground font-medium">AI is blending...</p>
+                    </div>
+                  </div>
+                ) : generatedImage ? (
+                  <img
+                    src={generatedImage || "/placeholder.svg"}
+                    alt="AI Generated Result"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center px-4">
+                      <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-muted-foreground text-sm">Your result will appear here</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!personImage || !clothingImage || isGenerating || lumeCoins < GENERATION_COST}
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground flex-1"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  {isGenerating ? "Generating..." : `Generate (${GENERATION_COST} coins)`}
+                </Button>
+                <Button variant="outline" onClick={handleSaveImage} disabled={!generatedImage}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+                <Button variant="outline" onClick={handleShare} disabled={!generatedImage}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+              </div>
+
+              {lumeCoins < GENERATION_COST && (
+                <div className="mt-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <p className="text-sm text-destructive">
+                    Not enough LumeCoins! You need {GENERATION_COST} coins to generate.
+                  </p>
                 </div>
               )}
-
-              <input
-                  ref={clothingInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleClothingImageUpload}
-                  className="hidden"
-              />
-            </div>
-          </Card>
-        </div>
-        
-        {/* Generate & Result Section */}
-
-        <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50 mt-4">
-          <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Generate Section</h3>
-
-          {/* AI Generation Area */}
-          <div className="relative bg-secondary/20 rounded-lg overflow-hidden mb-4 mx-auto max-w-sm"
-            style={{ aspectRatio: "3/4" }}
-          >
-            {isGenerating ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-3"></div>
-                    <p className="text-foreground font-medium">AI is blending...</p>
-                  </div>
-                </div>
-                ) : generatedImage ? (
-                <Image
-                    src={generatedImage || "/placeholder.svg"} 
-                    alt="Blended result" 
-                    fill
-                    className="object-cover"
-                />
-                ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center px-4">
-                    <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground text-sm">Your result will appear here</p>
-                  </div>
-                </div>
-            )}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
-            <Button
-              type="submit"
-              disabled={!personImage || !clothingImage || isGenerating}
-              className="bg-accent hover:bg-accent/90 text-accent-foreground flex-1"
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              {isGenerating ? "Generating..." : "Generate"}
-            </Button>
-            <Button variant="outline" onClick={handleSaveImage} disabled={!generatedImage}>
-              <Download className="h-4 w-4 mr-2" />
-              Save
-            </Button>
-            <Button variant="outline" onClick={handleShare} disabled={!generatedImage}>
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-          </div>
-        </Card>
-            
-      </form>
+            </Card>
+          </div>      
+        </form>
 
       {/* Virtual Try-On Tips */}
       <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
