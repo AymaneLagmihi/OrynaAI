@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI, Modality } from "@google/genai";
 
-
-export const runtime = "nodejs"; // ensure fs and buffers work
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
@@ -11,8 +9,9 @@ export async function POST(req: Request) {
     const image2 = formData.get("image2") as File;
     const promptText = formData.get("promptText") as string;
 
-    if (!image1 || !image2)
+    if (!image1 || !image2) {
       return NextResponse.json({ error: "Missing images" }, { status: 400 });
+    }
 
     // Convert images to Base64
     const arrayBuffer1 = await image1.arrayBuffer();
@@ -20,39 +19,35 @@ export async function POST(req: Request) {
     const base64Image1 = Buffer.from(arrayBuffer1).toString("base64");
     const base64Image2 = Buffer.from(arrayBuffer2).toString("base64");
 
-    const ai = new GoogleGenAI({
-      apiKey: process.env.GOOGLE_API_KEY!,
+    // OpenRouter API call for image generation/blending
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image-preview",
+        prompt: `${promptText}. Blend the following two images together:`,
+        images: [
+          `data:${image1.type || "image/png"};base64,${base64Image1}`,
+          `data:${image2.type || "image/png"};base64,${base64Image2}`
+        ],
+        size: "1024x1024"
+      }),
     });
 
-    const prompt = [
-      {
-        inlineData: { mimeType: image1.type || "image/png", data: base64Image1 },
-      },
-      {
-        inlineData: { mimeType: image2.type || "image/png", data: base64Image2 },
-      },
-      { text: promptText },
-    ];
+    const data = await response.json();
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
-      contents: prompt,
-    });
-
-    const part = response.candidates?.[0]?.content?.parts?.find(
-      (p: any) => p.inlineData
-    );
-
-    if (!part) {
+    if (!data?.data?.[0]?.url) {
       return NextResponse.json({ error: "No image generated" }, { status: 500 });
     }
 
-    const base64Result = part.inlineData.data;
-    const imageUrl = `data:image/png;base64,${base64Result}`;
+    const imageUrl = data.data[0].url;
 
     return NextResponse.json({ data: [{ url: imageUrl }] });
   } catch (err: any) {
-    console.error("Blend API Error:", err);
+    console.error("OpenRouter Blend Error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

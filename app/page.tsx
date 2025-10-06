@@ -646,8 +646,6 @@ export default function Home() {
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
               <Button 
-                // variant="elegant" 
-                // size="hero"
                 variant="outline"
                 size="sm"
                 className="rounded-2xl shadow-glow hover:shadow-elegant bg-background text-foreground hover:bg-background/90 dark:bg-background/90"
@@ -658,7 +656,6 @@ export default function Home() {
               </Button>
               <Button 
                 variant="outline" 
-                // size="hero"
                 size="sm"
                 className="rounded-2xl border-primary-foreground/20 text-foreground hover:bg-primary-foreground/50 dark:border-primary-foreground/20 dark:text-foreground dark:hover:bg-primary-foreground/50"
               >

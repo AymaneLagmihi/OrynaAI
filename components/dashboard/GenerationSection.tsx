@@ -53,22 +53,17 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
     formData.append("image2", clothingImage);
     formData.append("promptText", prompt);
 
-    const res = await fetch("/api/google-genai", {
+    const res = await fetch("api/openrouter", { // Make sure this URL is correct
       method: "POST",
       body: formData,
     });
-    
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
 
-
-    const data = await res.json();
+    const data = await res.json(); // This receives the data from your API
     setIsGenerating(false);
 
-    if (data?.data?.[0]?.url) {
+    if (data?.data?.[0]?.url) { // This accesses the URL from the JSON
       const imageUrl = data.data[0].url;
-      setGeneratedImage(imageUrl);
+      setGeneratedImage(imageUrl); // This updates the state to show the image
 
       const newSaved: SavedImage = {
         id: crypto.randomUUID(),
