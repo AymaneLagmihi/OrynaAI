@@ -5,6 +5,8 @@ import { useState, useEffect } from "react"
 import { Navigation } from "@/components/Navigation"
 import { SavedGallery } from "@/components/dashboard/SavedGallery"
 import { GenerationSection } from "@/components/dashboard/GenerationSection"
+import { useNextStep } from 'nextstepjs';
+
 
 interface SavedImage {
   id: string
@@ -16,6 +18,8 @@ interface SavedImage {
 
 export default function AIVirtualTryOnPage() {
   const [savedImages, setSavedImages] = useState<SavedImage[]>([])
+
+  const { startNextStep } = useNextStep();
 
   useEffect(() => {
     const saved = localStorage.getItem("virtualTryOnGallery")
@@ -40,16 +44,18 @@ export default function AIVirtualTryOnPage() {
       return updated
     })
   }
+  
 
   return (
     <div className="min-h-screen bg-background gradient-bg">
       <Navigation />
+
       <main className="max-w-[1800px] mx-auto px-4 py-25 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6">
-          <div className=""id="saved-gallery">
+        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6" id="navigation-bar">
+          <div id="saved-gallery">
             <SavedGallery savedImages={savedImages} onDelete={handleDeleteSavedImage} />
           </div>
-          
+
           <div className=""id="generation-section">
             <GenerationSection onGenerationComplete={handleGenerationComplete} />
           </div>

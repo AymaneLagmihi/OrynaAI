@@ -29,8 +29,8 @@ import { logout } from "@/actions/logout";
 import { getProfile } from "@/actions/get-profile";
 import { AnimatedThemeToggler } from "./toggle";
 import { CoinDisplay } from "./dashboard/CoinDisplay";
-import { StepTuto } from "./dashboard/StepTuto";
 import { useNextStep } from 'nextstepjs';
+import {HelpButton} from "./dashboard/HelpButton";
 
 
 export function Navigation() {
@@ -152,24 +152,23 @@ export function Navigation() {
                         </Button>
                       </div>
                     </div>
-                    <Separator />
+
                     <div>
-                      <div className="w-full flex justify-center position-relative self-end bg-amber-100">
-                        <StepTuto />
+                      <div className=" flex items-end space-x-4 justify-end fixed bottom-4 right-5 z-50">
+                        <HelpButton />
                       </div>
                     </div>
 
                   </SheetContent>
                 </Sheet>
               </div>
-
             </div>
           </div>
         </header>
 
         <div className="hidden md:flex items-end space-x-4 justify-end fixed bottom-4 right-4 z-50">
           <div className="fixed">
-            <StepTuto />
+            <HelpButton />
           </div>
         </div>
         
