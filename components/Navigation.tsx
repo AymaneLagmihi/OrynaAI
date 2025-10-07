@@ -29,8 +29,12 @@ import { logout } from "@/actions/logout";
 import { getProfile } from "@/actions/get-profile";
 import { AnimatedThemeToggler } from "./toggle";
 import { CoinDisplay } from "./dashboard/CoinDisplay";
+import { StepTuto } from "./dashboard/StepTuto";
+import { useNextStep } from 'nextstepjs';
+
 
 export function Navigation() {
+    const { startNextStep, closeNextStep, currentTour, currentStep, setCurrentStep, isNextStepVisible } = useNextStep();
     const supabase = createClient();
     const [user, setUser] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
@@ -50,6 +54,7 @@ export function Navigation() {
     }, [supabase]);
 
     return (
+      <>
         <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl mx-auto px-4">
           <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl px-6 py-3 shadow-elegant">
             <div className="flex items-center justify-between">
@@ -87,10 +92,7 @@ export function Navigation() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
+                    
                     <DropdownMenuItem asChild>
                       <Link href='/settings'>
                         <Settings className="mr-2 h-4 w-4" />
@@ -120,10 +122,10 @@ export function Navigation() {
                     <div className="flex flex-col space-y-4 ">
                       {/* Menu Items */}
                       <div className="flex flex-col px-3.5 space-y-2">
-                        <Button variant="ghost" className="justify-start">
-                          <User className="mr-2 h-4 w-4" />
-                          Profile
-                        </Button>
+                        <div className="flex justify-between items-center p-2">
+                            <span>Coins</span>
+                            <CoinDisplay />
+                        </div>
 
                         <Button variant="ghost" className="justify-start" asChild>
                           <Link href='/settings'>
@@ -139,7 +141,9 @@ export function Navigation() {
                             <span>Theme</span>
                             <AnimatedThemeToggler />
                         </div>
+                        
                       </div>
+                      
 
                       <Separator />
                       <div className=" w-full flex justify-center">
@@ -148,11 +152,27 @@ export function Navigation() {
                         </Button>
                       </div>
                     </div>
+                    <Separator />
+                    <div>
+                      <div className="w-full flex justify-center position-relative self-end bg-amber-100">
+                        <StepTuto />
+                      </div>
+                    </div>
+
                   </SheetContent>
                 </Sheet>
               </div>
+
             </div>
           </div>
         </header>
+
+        <div className="hidden md:flex items-end space-x-4 justify-end fixed bottom-4 right-4 z-50">
+          <div className="fixed">
+            <StepTuto />
+          </div>
+        </div>
+        
+      </>
   );
 }
