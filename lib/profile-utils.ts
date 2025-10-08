@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-export async function upsertProfile(userId: string, data: { fullName?: string, avatarUrl?: string, email?: string }, coin: number) {
+export async function upsertProfile(userId: string, data: { fullName?: string, avatarUrl?: string, email?: string, coin?: number }) {
   const supabase = await createClient();
 
   // First check if profile exists
@@ -18,7 +18,7 @@ export async function upsertProfile(userId: string, data: { fullName?: string, a
     email: data.email,
     avatar_url: data.avatarUrl,
     updated_at: new Date().toISOString(),
-    coin_balance: coin,
+    coin_balance: data.coin !== undefined ? data.coin : 0,
   };
 
   let result;

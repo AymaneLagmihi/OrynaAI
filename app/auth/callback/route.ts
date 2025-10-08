@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       try {
         await upsertProfile(data.user.id, {
           fullName: data.user.user_metadata.full_name || data.user.user_metadata.name,
-          avatarUrl: data.user.user_metadata.avatar_url
+          avatarUrl: data.user.user_metadata.avatar_url,
         });
       } catch (profileError) {
         console.error('[CALLBACK ROUTE] Profile upsert error (non-blocking):', profileError);
