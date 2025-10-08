@@ -69,12 +69,12 @@ export function Navigation() {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-4">
-
-                <AnimatedThemeToggler />
-                
                 <div id="coin-display">
                   <CoinDisplay />
                 </div>
+
+                <AnimatedThemeToggler />
+                
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -109,7 +109,10 @@ export function Navigation() {
               </div>
 
               {/* Mobile Navigation */}
-              <div className="md:hidden">
+              <div className="md:hidden flex items-center space-x-2">
+                <div id="coin-display">
+                  <CoinDisplay />
+                </div>
                 <Sheet>
                   <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
