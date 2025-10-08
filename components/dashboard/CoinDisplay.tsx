@@ -38,7 +38,7 @@ export function CoinDisplay() {
   }
 
   return (
-    <Badge variant="outline" className="flex items-center gap-1.5 px-3 py-1 text-sm font-semibold">
+    <Badge variant="outline" className="flex items-center gap-1.5 px-3 py-1 text-sm font-semibold" >
       <Coins className="h-4 w-4" />
       <span>{coins}</span>
     </Badge>

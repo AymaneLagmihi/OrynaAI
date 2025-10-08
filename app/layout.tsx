@@ -4,6 +4,10 @@ import "@/styles/globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/hooks/use-auth";
+import { NextStepProvider, NextStep } from 'nextstepjs';
+import steps from '@/app/(protected)/dashboard/steps';
+import onBoardComponent from '@/components/onBoardComponent';
+
 
 
 export const metadata: Metadata = {
@@ -36,7 +40,11 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>
-              {children}
+              <NextStepProvider>
+                <NextStep steps={steps}  cardComponent={onBoardComponent} >
+                  {children}
+                </NextStep>
+              </NextStepProvider>
             </AuthProvider>
           </ThemeProvider>
         </body>

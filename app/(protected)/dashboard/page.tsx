@@ -48,15 +48,17 @@ export default function AIVirtualTryOnPage() {
 
   return (
     <div className="min-h-screen bg-background gradient-bg">
-      <Navigation />
+      <div id="navigation-bar">
+        <Navigation />
+      </div>
 
       <main className="max-w-[1800px] mx-auto px-4 py-25 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6" id="navigation-bar">
+        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6">
           <div id="saved-gallery">
             <SavedGallery savedImages={savedImages} onDelete={handleDeleteSavedImage} />
           </div>
 
-          <div className=""id="generation-section">
+          <div id="generation-section">
             <GenerationSection onGenerationComplete={handleGenerationComplete} />
           </div>
         </div>

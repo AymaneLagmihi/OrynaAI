@@ -117,7 +117,7 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+              <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50" id="upload-button-person">
                 <div className="flex items-center gap-2 mb-3">
                   <User className="h-4 w-4 text-accent" />
                   <h3 className="text-sm font-semibold text-foreground">Upload Your Photo</h3>
@@ -150,7 +150,7 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
                 </div>
               </Card>
 
-              <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+              <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50" id="upload-button-clothing">
                 <div className="flex items-center gap-2 mb-3">
                   <Shirt className="h-4 w-4 text-accent" />
                   <h3 className="text-sm font-semibold text-foreground">Upload Clothing</h3>
@@ -221,6 +221,7 @@ export function GenerationSection({ onGenerationComplete }: GenerationSectionPro
                   onClick={handleSubmit}
                   disabled={!personImage || !clothingImage || isGenerating || coins < GENERATION_COST}
                   className="bg-accent hover:bg-accent/90 text-accent-foreground flex-1"
+                  id="generate-button"
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
                   {isGenerating ? "Generating..." : `Generate (${GENERATION_COST} coins)`}

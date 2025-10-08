@@ -34,7 +34,6 @@ import {HelpButton} from "./dashboard/HelpButton";
 
 
 export function Navigation() {
-    const { startNextStep, closeNextStep, currentTour, currentStep, setCurrentStep, isNextStepVisible } = useNextStep();
     const supabase = createClient();
     const [user, setUser] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
@@ -72,8 +71,10 @@ export function Navigation() {
               <div className="hidden md:flex items-center space-x-4">
 
                 <AnimatedThemeToggler />
-
-                <CoinDisplay />
+                
+                <div id="coin-display">
+                  <CoinDisplay />
+                </div>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -155,7 +156,7 @@ export function Navigation() {
 
                     <div>
                       <div className=" flex items-end space-x-4 justify-end fixed bottom-4 right-5 z-50">
-                        <HelpButton />
+                        <HelpButton/>
                       </div>
                     </div>
 
