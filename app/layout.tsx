@@ -10,6 +10,7 @@ import onBoardComponent from '@/components/onBoardComponent';
 
 
 
+
 export const metadata: Metadata = {
   title: "OrynaAI",
   description: "Cutting-edge AI technology meets fashion expertise to deliver personalized styling solutions.",
